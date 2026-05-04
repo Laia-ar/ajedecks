@@ -1,0 +1,16 @@
+; Engine Configuration File.
+; It's best edited using the editor UI and not directly,
+; since the properties are organized in sections here.
+
+[application]
+config/name="Ajedecks"
+config/features=PackedStringArray("4.2", "Forward Plus")
+config/icon="res://assets/icon.svg"
+
+[display]
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/stretch/mode="canvas_items"
+
+[rendering]
+renderer/rendering_method="forward_plus"
