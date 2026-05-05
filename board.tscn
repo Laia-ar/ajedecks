@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://c57vujh20ndv0"]
+[gd_scene load_steps=12 format=3 uid="uid://c57vujh20ndv0"]
 
 [ext_resource type="Script" path="res://generator.gd" id="1_ckrtr"]
 [ext_resource type="Script" path="res://game.gd" id="1_f1l42"]
@@ -10,6 +10,7 @@
 [ext_resource type="PackedScene" uid="uid://yqfgmt234xui" path="res://ChessScenes/king.tscn" id="8_vvr6q"]
 [ext_resource type="Script" path="res://game_win.gd" id="9_ww6wk"]
 [ext_resource type="Script" path="res://card_destroy_tile.gd" id="10_pisxf"]
+[ext_resource type="Script" path="res://card_revive_tile.gd" id="11_a1ga0"]
 
 [node name="Board" type="Control"]
 layout_mode = 3
@@ -84,6 +85,18 @@ anchor_bottom = 17.825
 offset_left = 7.0
 offset_top = 584.0
 script = ExtResource("10_pisxf")
+BoardPath = NodePath("..")
+FlowPath = NodePath("../Flow")
+
+[node name="ReviveTileCard" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 4.375
+anchor_top = 14.65
+anchor_right = 6.825
+anchor_bottom = 17.8
+offset_bottom = -6.10352e-05
+script = ExtResource("11_a1ga0")
 BoardPath = NodePath("..")
 FlowPath = NodePath("../Flow")
 

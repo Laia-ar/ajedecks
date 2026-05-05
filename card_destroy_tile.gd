@@ -10,8 +10,6 @@ extends Button
 
 # Estamos esperando que el jugador elija una tile?
 var SelectingTile: bool = false
-# La carta ya fue usada?
-var Used: bool = false
 
 func _ready():
 	text = "Destruir tile"
@@ -20,8 +18,6 @@ func _ready():
 	Flow.SendLocation.connect(_on_tile_clicked)
 
 func _on_pressed():
-	if Used:
-		return
 	SelectingTile = !SelectingTile  # Toggle: si la apretás de nuevo, cancelás
 	if SelectingTile:
 		text = "Elegí una tile vacía..."
@@ -29,7 +25,7 @@ func _on_pressed():
 		text = "Destruir tile"
 
 func _on_tile_clicked(Location: String):
-	if not SelectingTile or Used:
+	if not SelectingTile:
 		return
 	
 	var cell = Flow.get_node(Location)
@@ -42,12 +38,7 @@ func _on_tile_clicked(Location: String):
 	
 	# Destruir la tile
 	Board.DestroyedTiles[Location] = true
-	cell.modulate = Color(0.1, 0.1, 0.1, 0.5)  # gris oscuro semitransparente
-	cell.disabled = true
-	cell.focus_mode = Control.FOCUS_NONE
+	cell.modulate = Color(0.1, 0.1, 0.1, 0.5)
 	
-	# Marcar la carta como usada
-	Used = true
 	SelectingTile = false
-	text = "Carta usada"
-	disabled = true
+	text = "Destruir tile"
