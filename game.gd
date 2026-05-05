@@ -23,6 +23,10 @@ var LocationYInt: int
 # Areas where the player can move
 var Areas: PackedStringArray
 # this is seperate the Areas for special circumstances, like castling.
+
+# Tiles destruidas por cartas. Las piezas no pueden moverse a estas casillas.
+var DestroyedTiles: Dictionary = {}
+
 var SpecialArea: PackedStringArray
 
 func _on_flow_send_location(Location: String):
@@ -380,13 +384,14 @@ func Castle():
 			SpecialArea.append(str(LocationXInt - 1) + "-" + LocationY)
 			SpecialArea.append(str(LocationXInt - 2) + "-" + LocationY)
 
-# One function that shortens everything. Its also a pretty good way to see if we went off the board or not.
 func IsNull(Location):
 	if Flow.get_node_or_null(Location) == null:
 		return true
-	else:
-		IsKing(Location)
-		return false
+	# Si la tile fue destruida por una carta, se trata como inexistente
+	if DestroyedTiles.has(Location):
+		return true
+	IsKing(Location)
+	return false
 
 # Checking for a king.
 func CheckKing(Children):
