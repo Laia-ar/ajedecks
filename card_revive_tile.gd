@@ -9,16 +9,16 @@ extends Button
 var SelectingTile: bool = false
 
 func _ready():
-	text = "Resucitar tile"
+	text = "Agregar tile"
 	pressed.connect(_on_pressed)
 	Flow.SendLocation.connect(_on_tile_clicked)
 
 func _on_pressed():
 	SelectingTile = !SelectingTile
 	if SelectingTile:
-		text = "Elegí una tile destruida..."
+		text = "Elegí dónde agregar una tile..."
 	else:
-		text = "Resucitar tile"
+		text = "Agregar tile"
 
 func _on_tile_clicked(Location: String):
 	if not SelectingTile:
@@ -35,4 +35,4 @@ func _on_tile_clicked(Location: String):
 	cell.modulate = Color(1, 1, 1, 1)
 	
 	SelectingTile = false
-	text = "Reconstruir tile"
+	text = "Agregar tile"

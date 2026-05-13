@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://c57vujh20ndv0"]
+[gd_scene load_steps=18 format=3 uid="uid://c57vujh20ndv0"]
 
 [ext_resource type="Script" path="res://generator.gd" id="1_ckrtr"]
 [ext_resource type="Script" path="res://game.gd" id="1_f1l42"]
@@ -11,6 +11,12 @@
 [ext_resource type="Script" path="res://game_win.gd" id="9_ww6wk"]
 [ext_resource type="Script" path="res://card_destroy_tile.gd" id="10_pisxf"]
 [ext_resource type="Script" path="res://card_revive_tile.gd" id="11_a1ga0"]
+[ext_resource type="Script" path="res://card_place_piece.gd" id="12_xjupx"]
+[ext_resource type="Script" path="res://card_remove_piece.gd" id="13_kaqiq"]
+[ext_resource type="Script" path="res://mode_toggle.gd" id="14_1lhue"]
+[ext_resource type="Script" path="res://reset_button.gd" id="15_mmcrq"]
+[ext_resource type="Script" path="res://save_button.gd" id="16_ccxe3"]
+[ext_resource type="Script" path="res://load_button.gd" id="17_3qfpr"]
 
 [node name="Board" type="Control"]
 layout_mode = 3
@@ -99,6 +105,261 @@ offset_bottom = -6.10352e-05
 script = ExtResource("11_a1ga0")
 BoardPath = NodePath("..")
 FlowPath = NodePath("../Flow")
+
+[node name="PiecePalette" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 26.175
+anchor_top = 4.552
+anchor_right = 31.65
+anchor_bottom = 14.575
+offset_top = 9.92
+
+[node name="PlacePawnWhite" type="Button" parent="PiecePalette"]
+layout_mode = 2
+script = ExtResource("12_xjupx")
+BoardPath = NodePath("../..")
+FlowPath = NodePath("../../Flow")
+
+[node name="PlaceRookWhite" type="Button" parent="PiecePalette"]
+layout_mode = 2
+script = ExtResource("12_xjupx")
+BoardPath = NodePath("../..")
+FlowPath = NodePath("../../Flow")
+PieceType = "Rook"
+
+[node name="PlaceKnightWhite" type="Button" parent="PiecePalette"]
+layout_mode = 2
+script = ExtResource("12_xjupx")
+BoardPath = NodePath("../..")
+FlowPath = NodePath("../../Flow")
+PieceType = "Knight"
+
+[node name="PlaceBishopWhite" type="Button" parent="PiecePalette"]
+layout_mode = 2
+script = ExtResource("12_xjupx")
+BoardPath = NodePath("../..")
+FlowPath = NodePath("../../Flow")
+PieceType = "Bishop"
+
+[node name="PlaceQueenWhite" type="Button" parent="PiecePalette"]
+layout_mode = 2
+script = ExtResource("12_xjupx")
+BoardPath = NodePath("../..")
+FlowPath = NodePath("../../Flow")
+PieceType = "Queen"
+
+[node name="PlaceKingWhite" type="Button" parent="PiecePalette"]
+layout_mode = 2
+script = ExtResource("12_xjupx")
+BoardPath = NodePath("../..")
+FlowPath = NodePath("../../Flow")
+PieceType = "King"
+
+[node name="PlacePawnBlack" type="Button" parent="PiecePalette"]
+layout_mode = 2
+script = ExtResource("12_xjupx")
+BoardPath = NodePath("../..")
+FlowPath = NodePath("../../Flow")
+PieceColor = 1
+
+[node name="PlaceRookBlack" type="Button" parent="PiecePalette"]
+layout_mode = 2
+script = ExtResource("12_xjupx")
+BoardPath = NodePath("../..")
+FlowPath = NodePath("../../Flow")
+PieceType = "Rook"
+PieceColor = 1
+
+[node name="PlaceKnightBlack" type="Button" parent="PiecePalette"]
+layout_mode = 2
+script = ExtResource("12_xjupx")
+BoardPath = NodePath("../..")
+FlowPath = NodePath("../../Flow")
+PieceType = "Knight"
+PieceColor = 1
+
+[node name="PlaceBishopBlack" type="Button" parent="PiecePalette"]
+layout_mode = 2
+script = ExtResource("12_xjupx")
+BoardPath = NodePath("../..")
+FlowPath = NodePath("../../Flow")
+PieceType = "Bishop"
+PieceColor = 1
+
+[node name="PlaceQueenBlack" type="Button" parent="PiecePalette"]
+layout_mode = 2
+script = ExtResource("12_xjupx")
+BoardPath = NodePath("../..")
+FlowPath = NodePath("../../Flow")
+PieceType = "Queen"
+PieceColor = 1
+
+[node name="PlaceKingBlack" type="Button" parent="PiecePalette"]
+layout_mode = 2
+script = ExtResource("12_xjupx")
+BoardPath = NodePath("../..")
+FlowPath = NodePath("../../Flow")
+PieceType = "King"
+PieceColor = 1
+
+[node name="RemovePiece" type="Button" parent="PiecePalette"]
+layout_mode = 2
+script = ExtResource("13_kaqiq")
+BoardPath = NodePath("../..")
+FlowPath = NodePath("../../Flow")
+
+[node name="ModeToggle" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 19.725
+anchor_top = 0.3
+anchor_right = 23.225
+anchor_bottom = 1.3
+script = ExtResource("14_1lhue")
+BoardPath = NodePath("..")
+PaletteButtons = Array[NodePath]([NodePath("../DestroyTileCard"), NodePath("../ReviveTileCard"), NodePath("../PiecePalette/PlacePawnWhite"), NodePath("../PiecePalette/PlaceRookWhite"), NodePath("../PiecePalette/PlaceKnightWhite"), NodePath("../PiecePalette/PlaceBishopWhite"), NodePath("../PiecePalette/PlaceQueenWhite"), NodePath("../PiecePalette/PlaceKingWhite"), NodePath("../PiecePalette/PlacePawnBlack"), NodePath("../PiecePalette/PlaceRookBlack"), NodePath("../PiecePalette/PlaceKnightBlack"), NodePath("../PiecePalette/PlaceBishopBlack"), NodePath("../PiecePalette/PlaceQueenBlack"), NodePath("../PiecePalette/PlaceKingBlack"), NodePath("../PiecePalette/RemovePiece")])
+
+[node name="ResetButton" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 24.5
+anchor_top = 0.35
+anchor_right = 27.775
+anchor_bottom = 1.55
+offset_left = -6.10352e-05
+script = ExtResource("15_mmcrq")
+BoardPath = NodePath("..")
+FlowPath = NodePath("../Flow")
+ModeTogglePath = NodePath("../ModeToggle")
+
+[node name="SaveDialog" type="Panel" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 13.675
+anchor_top = 6.775
+anchor_right = 19.65
+anchor_bottom = 10.15
+offset_right = -6.10352e-05
+offset_bottom = -3.05176e-05
+
+[node name="Label" type="Label" parent="SaveDialog"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.205
+anchor_top = 0.115
+anchor_right = 0.77
+anchor_bottom = 0.2
+offset_left = 0.00499725
+offset_top = -11.525
+offset_right = -0.030014
+text = "Nombre del save:"
+
+[node name="NameInput" type="LineEdit" parent="SaveDialog"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.201
+anchor_top = 0.281
+anchor_right = 0.749
+anchor_bottom = 0.5
+offset_left = -0.0390015
+offset_top = 0.0649986
+offset_right = -0.0110016
+offset_bottom = 1.5
+
+[node name="Confirm" type="Button" parent="SaveDialog"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.586
+anchor_top = 0.696
+anchor_right = 0.891
+anchor_bottom = 0.926
+offset_left = -0.0540009
+offset_top = 0.0399933
+offset_right = 0.0509949
+offset_bottom = -0.0100098
+text = "Guardar"
+
+[node name="LoadDialog" type="Panel" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 13.7
+anchor_top = 6.775
+anchor_right = 19.725
+anchor_bottom = 10.125
+offset_bottom = -3.05176e-05
+
+[node name="Label" type="Label" parent="LoadDialog"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.282
+anchor_top = 0.052
+anchor_right = 0.714
+anchor_bottom = 0.224
+offset_left = 0.038002
+offset_top = 0.0320001
+offset_right = -0.0740051
+offset_bottom = -0.0160007
+text = "Elegí un save:"
+
+[node name="FileList" type="ItemList" parent="LoadDialog"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Confirm" type="Button" parent="LoadDialog"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.631
+anchor_top = 0.672
+anchor_right = 0.88
+anchor_bottom = 0.903
+offset_left = -0.0710144
+offset_top = -0.0480042
+offset_right = -0.0800171
+offset_bottom = -0.00200653
+text = "Cargar"
+
+[node name="Cancel" type="Button" parent="LoadDialog"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.037
+anchor_top = 0.687
+anchor_right = 0.353
+anchor_bottom = 0.918
+offset_left = 0.0830002
+offset_top = -0.0580063
+offset_right = -0.0730057
+offset_bottom = -0.0120087
+text = "Cancelar
+"
+
+[node name="SaveButton" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 15.075
+anchor_top = 1.95
+anchor_right = 18.15
+anchor_bottom = 2.8
+offset_right = -6.10352e-05
+script = ExtResource("16_ccxe3")
+BoardPath = NodePath("..")
+SaveDialogPath = NodePath("../SaveDialog")
+
+[node name="LoadButton" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 15.25
+anchor_top = 0.275
+anchor_right = 17.9
+anchor_bottom = 1.2
+offset_left = -6.10352e-05
+offset_right = -6.10352e-05
+script = ExtResource("17_3qfpr")
+BoardPath = NodePath("..")
+LoadDialogPath = NodePath("../LoadDialog")
 
 [connection signal="GameWin" from="." to="GameWin" method="_on_board_game_win"]
 [connection signal="SendLocation" from="Flow" to="." method="_on_flow_send_location"]

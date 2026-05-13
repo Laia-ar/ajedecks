@@ -15,6 +15,9 @@ var LocationY: String
 var LocationXInt: int
 var LocationYInt: int
 
+# Modo actual: false = Edit, true = Play
+var PlayMode: bool = false
+
 # This is the board buttons.
 @export_node_path("FlowContainer") var BoardPath
 @onready var Flow = get_node(BoardPath)
@@ -30,6 +33,10 @@ var DestroyedTiles: Dictionary = {}
 var SpecialArea: PackedStringArray
 
 func _on_flow_send_location(Location: String):
+	# En modo edición, el tablero no juega ajedrez
+	if not PlayMode:
+		return
+	
 	# Don't update ANYTHING if you still need to promote!
 	if get_node("Promotion").visible == true:
 		return
@@ -405,3 +412,76 @@ func IsKing(Location):
 	var TheNode = Flow.get_node_or_null(Location)
 	if TheNode != null && TheNode.get_child_count() != 0 && TheNode.get_child(0).PieceColor != Turn && TheNode.get_child(0).name == "King":
 		TheNode.get_child(0).modulate = Color(1, 0, 0, 1)
+		
+# ====================================================================
+# Save / Load
+# ====================================================================
+
+func SerializeBoard() -> Dictionary:
+	var data = {
+		"version": 1,
+		"board_x": Flow.BoardXSize,
+		"board_y": Flow.BoardYSize,
+		"turn": Turn,
+		"active_tiles": [],
+		"pieces": []
+	}
+	
+	for tile in Flow.get_children():
+		# Tile activa = no está en DestroyedTiles
+		if not DestroyedTiles.has(tile.name):
+			data.active_tiles.append(tile.name)
+		# Pieza en la tile
+		if tile.get_child_count() > 0:
+			var piece = tile.get_child(0)
+			data.pieces.append({
+				"location": tile.name,
+				"type": piece.name,  # "Pawn", "Rook", etc.
+				"color": piece.PieceColor
+			})
+	
+	return data
+
+func DeserializeBoard(data: Dictionary):
+	# 1. Limpiar el tablero actual
+	for tile in Flow.get_children():
+		if tile.get_child_count() > 0:
+			tile.get_child(0).queue_free()
+		DestroyedTiles[tile.name] = true
+		tile.modulate = Color(0.1, 0.1, 0.1, 0.5)
+	
+	# 2. Activar las tiles del save
+	for loc in data.active_tiles:
+		var tile = Flow.get_node_or_null(loc)
+		if tile != null:
+			DestroyedTiles.erase(loc)
+			tile.modulate = Color(1, 1, 1, 1)
+	
+	# 3. Poner las piezas
+	for piece_data in data.pieces:
+		var tile = Flow.get_node_or_null(piece_data.location)
+		if tile == null:
+			continue
+		var scene: PackedScene = _get_piece_scene(piece_data.type)
+		if scene == null:
+			continue
+		var piece = scene.instantiate()
+		piece.Spawned(piece_data.color)
+		piece.position = Vector2(Flow.TileXSize / 2, Flow.TileYSize / 2)
+		tile.add_child(piece)
+	
+	# 4. Restaurar turno
+	Turn = data.get("turn", 0)
+	SelectedNode = ""
+	Areas.clear()
+	SpecialArea.clear()
+
+func _get_piece_scene(piece_type: String) -> PackedScene:
+	match piece_type:
+		"Pawn": return Flow.Pawn
+		"Bishop": return Flow.Bishop
+		"Rook": return Flow.Rook
+		"Knight": return Flow.Knight
+		"Queen": return Flow.Queen
+		"King": return Flow.King
+	return null

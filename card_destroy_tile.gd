@@ -12,7 +12,7 @@ extends Button
 var SelectingTile: bool = false
 
 func _ready():
-	text = "Destruir tile"
+	text = "Sacar tile"
 	pressed.connect(_on_pressed)
 	# Conectarse a la señal del Flow para enterarse cuando se clickea una tile
 	Flow.SendLocation.connect(_on_tile_clicked)
@@ -20,9 +20,9 @@ func _ready():
 func _on_pressed():
 	SelectingTile = !SelectingTile  # Toggle: si la apretás de nuevo, cancelás
 	if SelectingTile:
-		text = "Elegí una tile vacía..."
+		text = "Elegí una tile para sacar..."
 	else:
-		text = "Destruir tile"
+		text = "Sacar tile"
 
 func _on_tile_clicked(Location: String):
 	if not SelectingTile:
@@ -41,4 +41,4 @@ func _on_tile_clicked(Location: String):
 	cell.modulate = Color(0.1, 0.1, 0.1, 0.5)
 	
 	SelectingTile = false
-	text = "Destruir tile"
+	text = "Sacar tile"
