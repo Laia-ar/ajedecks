@@ -25,7 +25,10 @@ func _set_palette_enabled(enabled: bool):
 		if btn != null:
 			btn.disabled = not enabled
 			# Cancelar cualquier modo de selección activo
-			if not enabled and "Selecting" in btn:
-				btn.Selecting = false
-			if not enabled and "SelectingTile" in btn:
-				btn.SelectingTile = false
+			if not enabled:
+				if btn.has_method("Deactivate"):
+					btn.Deactivate()
+				elif "Selecting" in btn:
+					btn.Selecting = false
+				elif "SelectingTile" in btn:
+					btn.SelectingTile = false

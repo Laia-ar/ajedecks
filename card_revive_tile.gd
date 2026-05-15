@@ -13,7 +13,13 @@ func _ready():
 	pressed.connect(_on_pressed)
 	Flow.SendLocation.connect(_on_tile_clicked)
 
+func Deactivate():
+	SelectingTile = false
+	text = "Agregar tile"
+
 func _on_pressed():
+	if not SelectingTile:
+		Board.DeactivateAllPaletteTools()
 	SelectingTile = !SelectingTile
 	if SelectingTile:
 		text = "Elegí dónde agregar una tile..."
@@ -33,6 +39,3 @@ func _on_tile_clicked(Location: String):
 	# Resucitar la tile
 	Board.DestroyedTiles.erase(Location)
 	cell.modulate = Board.ActiveTileColor
-	
-	SelectingTile = false
-	text = "Agregar tile"

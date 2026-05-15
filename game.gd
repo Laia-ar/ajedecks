@@ -24,7 +24,8 @@ var TileHeights: Dictionary = {}
 @export_node_path("FlowContainer") var BoardPath
 @onready var Flow = get_node(BoardPath)
 
-@onready var pos: Vector2 = Vector2(self.get_child(0).TileXSize / 2, self.get_child(0).TileYSize / 2)
+@onready var pos: Vector2 = Vector2(Flow.TileXSize / 2, Flow.TileYSize / 2)
+@onready var StatusLabel = get_node_or_null("StatusLabel")
 # Areas where the player can move
 var Areas: PackedStringArray
 # this is seperate the Areas for special circumstances, like castling.
@@ -38,7 +39,8 @@ var DestroyedTileColor: Color = Color(0.18, 0.18, 0.20, 0.6)
 
 var SpecialArea: PackedStringArray
 
-func _on_flow_send_location(Location: String):
+func _on_flow_send_location(Location):
+	Location = str(Location)
 	# En modo edición, el tablero no juega ajedrez
 	if not PlayMode:
 		return
@@ -143,6 +145,8 @@ func UpdateGame(cell):
 		Turn = 1
 	else:
 		Turn = 0
+	
+	UpdateStatusLabel()
 
 # Below is the movement that is used for the pieces
 func GetMovableAreas():
@@ -494,6 +498,63 @@ func IsKing(Location):
 	var TheNode = Flow.get_node_or_null(Location)
 	if TheNode != null && TheNode.get_child_count() != 0 && TheNode.get_child(0).PieceColor != Turn && TheNode.get_child(0).name == "King":
 		TheNode.get_child(0).modulate = Color(1, 0, 0, 1)
+
+func DeactivateAllPaletteTools():
+	var mode_toggle = get_node_or_null("ModeToggle")
+	if mode_toggle == null:
+		return
+	for path in mode_toggle.PaletteButtons:
+		var btn = mode_toggle.get_node_or_null(path)
+		if btn != null and btn.has_method("Deactivate"):
+			btn.Deactivate()
+
+func UpdateStatusLabel():
+	if StatusLabel == null:
+		return
+	var turn_text = "Blanco" if Turn == 0 else "Negro"
+	var status = "Turno: " + turn_text
+	if _is_king_in_check(Turn):
+		if _is_checkmate_approx(Turn):
+			status += " — Jaque mate"
+		else:
+			status += " — Jaque"
+	StatusLabel.text = status
+
+func _is_king_in_check(color: int) -> bool:
+	for tile in Flow.get_children():
+		if tile.get_child_count() != 0:
+			var piece = tile.get_child(0)
+			if piece.name == "King" and piece.PieceColor == color:
+				if piece.modulate == Color(1, 0, 0, 1):
+					return true
+	return false
+
+func _is_checkmate_approx(color: int) -> bool:
+	if not _is_king_in_check(color):
+		return false
+	var saved_selected = SelectedNode
+	var saved_areas = Areas.duplicate()
+	var saved_special = SpecialArea.duplicate()
+	for tile in Flow.get_children():
+		if tile.get_child_count() != 0:
+			var piece = tile.get_child(0)
+			if piece.name == "King" and piece.PieceColor == color:
+				SelectedNode = str(tile.name)
+				var parts = str(tile.name).split("-")
+				LocationX = parts[0]
+				LocationY = parts[1]
+				LocationXInt = int(LocationX)
+				LocationYInt = int(LocationY)
+				GetMovableAreas()
+				var has_moves = Areas.size() > 0
+				SelectedNode = saved_selected
+				Areas = saved_areas
+				SpecialArea = saved_special
+				return not has_moves
+	SelectedNode = saved_selected
+	Areas = saved_areas
+	SpecialArea = saved_special
+	return false
 		
 # ====================================================================
 # Save / Load
@@ -605,9 +666,9 @@ func _update_tile_visual(Location: String):
 	var h = GetHeight(Location)
 	var color: Color
 	if DestroyedTiles.has(Location):
-		color = Color(0.1, 0.1, 0.1, 0.5)
+		color = DestroyedTileColor
 	elif h == 0:
-		color = Color(1, 1, 1, 1)
+		color = ActiveTileColor
 	elif h > 0:
 		var t = float(h) / float(MAX_HEIGHT)
 		color = Color(1, 1, 1 - t * 0.7, 1)

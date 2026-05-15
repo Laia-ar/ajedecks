@@ -45,7 +45,13 @@ func _build_label() -> String:
 		_: piece_name = PieceType
 	return piece_name + " " + color_name
 
+func Deactivate():
+	Selecting = false
+	text = BaseText
+
 func _on_pressed():
+	if not Selecting:
+		Board.DeactivateAllPaletteTools()
 	Selecting = !Selecting
 	if Selecting:
 		text = "Elegí dónde colocar..."
@@ -79,8 +85,6 @@ func _on_tile_clicked(Location: String):
 	cell.add_child(piece)
 	
 	# Volver al estado base (no se gasta)
-	Selecting = false
-	text = BaseText
 
 func _get_piece_scene() -> PackedScene:
 	# Reusamos las PackedScene que ya están exportadas en el Flow (generator.gd)

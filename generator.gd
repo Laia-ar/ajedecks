@@ -29,15 +29,16 @@ func _ready():
 		return
 	var NumberX: int = 0
 	var NumberY: int = 0
+	var TileButtonScript = preload("res://tile_button.gd")
 	# Crear los botones del tablero
 	while NumberY != BoardYSize:
 		self.size.y += TileYSize + 5
 		self.size.x += TileXSize + 5
 		while NumberX != BoardXSize:
-			var temp = Button.new()
+			var temp = TileButtonScript.new()
 			temp.set_custom_minimum_size(Vector2(TileXSize, TileYSize))
-			temp.connect("pressed", func():
-				SendLocation.emit(temp.name))
+			temp.Board = Board
+			temp.Flow = self
 			temp.set_name(str(NumberX) + "-" + str(NumberY))
 			add_child(temp)
 			# Si arrancamos vacío, marcamos todas como destruidas
@@ -53,41 +54,22 @@ func _ready():
 # Esta función ya no se usa con StartEmpty=true, pero la dejamos por si querés
 # volver al modo clásico cambiando los flags.
 func RegularGame():
-	get_node("0-0").add_child(Summon(Rook, 1))
-	get_node("1-0").add_child(Summon(Knight, 1))
-	get_node("2-0").add_child(Summon(Bishop, 1))
-	get_node("3-0").add_child(Summon(Queen, 1))
-	get_node("4-0").add_child(Summon(King, 1))
-	get_node("5-0").add_child(Summon(Bishop, 1))
-	get_node("6-0").add_child(Summon(Knight, 1))
-	get_node("7-0").add_child(Summon(Rook, 1))
+	var offset_x = (BoardXSize - 8) / 2
+	var offset_y = (BoardYSize - 8) / 2
 	
-	get_node("0-1").add_child(Summon(Pawn, 1))
-	get_node("1-1").add_child(Summon(Pawn, 1))
-	get_node("2-1").add_child(Summon(Pawn, 1))
-	get_node("3-1").add_child(Summon(Pawn, 1))
-	get_node("4-1").add_child(Summon(Pawn, 1))
-	get_node("5-1").add_child(Summon(Pawn, 1))
-	get_node("6-1").add_child(Summon(Pawn, 1))
-	get_node("7-1").add_child(Summon(Pawn, 1))
+	var back_row_black = [Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook]
+	for i in range(8):
+		get_node(str(offset_x + i) + "-" + str(offset_y)).add_child(Summon(back_row_black[i], 1))
 	
-	get_node("0-6").add_child(Summon(Pawn, 0))
-	get_node("1-6").add_child(Summon(Pawn, 0))
-	get_node("2-6").add_child(Summon(Pawn, 0))
-	get_node("3-6").add_child(Summon(Pawn, 0))
-	get_node("4-6").add_child(Summon(Pawn, 0))
-	get_node("5-6").add_child(Summon(Pawn, 0))
-	get_node("6-6").add_child(Summon(Pawn, 0))
-	get_node("7-6").add_child(Summon(Pawn, 0))
+	for i in range(8):
+		get_node(str(offset_x + i) + "-" + str(offset_y + 1)).add_child(Summon(Pawn, 1))
 	
-	get_node("0-7").add_child(Summon(Rook, 0))
-	get_node("1-7").add_child(Summon(Knight, 0))
-	get_node("2-7").add_child(Summon(Bishop, 0))
-	get_node("3-7").add_child(Summon(Queen, 0))
-	get_node("4-7").add_child(Summon(King, 0))
-	get_node("5-7").add_child(Summon(Bishop, 0))
-	get_node("6-7").add_child(Summon(Knight, 0))
-	get_node("7-7").add_child(Summon(Rook, 0))
+	for i in range(8):
+		get_node(str(offset_x + i) + "-" + str(offset_y + 6)).add_child(Summon(Pawn, 0))
+	
+	var back_row_white = [Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook]
+	for i in range(8):
+		get_node(str(offset_x + i) + "-" + str(offset_y + 7)).add_child(Summon(back_row_white[i], 0))
 
 func Summon(Scene: PackedScene, color: int):
 	var Piece = Scene.instantiate()

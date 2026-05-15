@@ -14,7 +14,13 @@ func _ready():
 	pressed.connect(_on_pressed)
 	Flow.SendLocation.connect(_on_tile_clicked)
 
+func Deactivate():
+	Selecting = false
+	text = "Borrar pieza"
+
 func _on_pressed():
+	if not Selecting:
+		Board.DeactivateAllPaletteTools()
 	Selecting = !Selecting
 	if Selecting:
 		text = "Elegí una pieza para borrar..."
@@ -30,6 +36,3 @@ func _on_tile_clicked(Location: String):
 		return  # No hay pieza
 	
 	cell.get_child(0).queue_free()
-	
-	Selecting = false
-	text = "Borrar pieza"

@@ -23,7 +23,12 @@ func _ready():
 	pressed.connect(_on_pressed)
 	Flow.SendLocation.connect(_on_tile_clicked)
 
+func Deactivate():
+	_reset()
+
 func _on_pressed():
+	if CurrentState == State.IDLE:
+		Board.DeactivateAllPaletteTools()
 	if CurrentState == State.IDLE:
 		CurrentState = State.WAITING_FIRST
 		text = "Elegí la primera esquina..."
@@ -42,7 +47,9 @@ func _on_tile_clicked(Location: String):
 
 	if CurrentState == State.WAITING_SECOND:
 		_apply_region(FirstCorner, Location)
-		_reset()
+		FirstCorner = ""
+		CurrentState = State.WAITING_FIRST
+		text = "Elegí la primera esquina..."
 
 func _apply_region(corner1: String, corner2: String):
 	var coords1 = _parse_coords(corner1)

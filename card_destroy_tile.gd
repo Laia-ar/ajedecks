@@ -17,7 +17,13 @@ func _ready():
 	# Conectarse a la señal del Flow para enterarse cuando se clickea una tile
 	Flow.SendLocation.connect(_on_tile_clicked)
 
+func Deactivate():
+	SelectingTile = false
+	text = "Sacar tile"
+
 func _on_pressed():
+	if not SelectingTile:
+		Board.DeactivateAllPaletteTools()
 	SelectingTile = !SelectingTile  # Toggle: si la apretás de nuevo, cancelás
 	if SelectingTile:
 		text = "Elegí una tile para sacar..."
@@ -39,8 +45,3 @@ func _on_tile_clicked(Location: String):
 	# Destruir la tile
 	Board.DestroyedTiles[Location] = true
 	Board.SetHeight(Location, 0)
-	cell.modulate = Color(0.1, 0.1, 0.1, 0.5)
-	cell.modulate = Board.DestroyedTileColor
-
-	SelectingTile = false
-	text = "Sacar tile"
