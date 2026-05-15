@@ -17,6 +17,7 @@
 [ext_resource type="Script" path="res://reset_button.gd" id="15_mmcrq"]
 [ext_resource type="Script" path="res://save_button.gd" id="16_ccxe3"]
 [ext_resource type="Script" path="res://load_button.gd" id="17_3qfpr"]
+[ext_resource type="Script" path="res://card_raise_tile.gd" id="18_o2vdi"]
 [ext_resource type="Script" path="res://card_destroy_region.gd" id="18_abc12"]
 [ext_resource type="Script" path="res://card_revive_region.gd" id="19_def34"]
 
@@ -378,6 +379,32 @@ offset_right = -6.10352e-05
 script = ExtResource("17_3qfpr")
 BoardPath = NodePath("..")
 LoadDialogPath = NodePath("../LoadDialog")
+
+[node name="RaiseTile" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 11.175
+anchor_top = 15.475
+anchor_right = 13.575
+anchor_bottom = 17.1
+script = ExtResource("18_o2vdi")
+BoardPath = NodePath("..")
+FlowPath = NodePath("../Flow")
+
+[node name="LowerTile" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 7.625
+anchor_top = 15.3
+anchor_right = 10.325
+anchor_bottom = 17.0
+offset_left = -3.05176e-05
+offset_top = -6.10352e-05
+offset_right = -3.05176e-05
+script = ExtResource("18_o2vdi")
+BoardPath = NodePath("..")
+FlowPath = NodePath("../Flow")
+Delta = -1
 
 [connection signal="GameWin" from="." to="GameWin" method="_on_board_game_win"]
 [connection signal="SendLocation" from="Flow" to="." method="_on_flow_send_location"]
