@@ -47,20 +47,10 @@ func _on_flow_send_location(Location: String):
 	if get_node("Promotion").visible == true:
 		return
 	
-	# variables for later
-	var number = 0
 	var cell = Flow.get_node(Location)
-	# This is to try and grab the X and Y coordinates from the board
-	LocationX = ""
-	LocationY = ""
-	while Location.substr(number, 1) != "-":
-		LocationX += Location.substr(number, 1)
-		number += 1
-	LocationY = Location.substr(number + 1)
-	LocationXInt = int(LocationX)
-	LocationYInt = int(LocationY)
-	# Now... we need to figure out how to select the pieces. If there is a valid move, do stuff.
-	# If we re-select, just go to that other piece
+	_update_location_vars(Location)
+	
+	# Selección inicial
 	if SelectedNode == "" && cell.get_child_count() != 0 && cell.get_child(0).PieceColor == Turn:
 		SelectedNode = Location
 		GetMovableAreas()
@@ -68,34 +58,42 @@ func _on_flow_send_location(Location: String):
 	elif SelectedNode != "" && cell.get_child_count() != 0 && cell.get_child(0).PieceColor == Turn && cell.get_child(0).name == "Rook":
 		for i in Areas:
 			if i == cell.name:
-				var king = Flow.get_node(SelectedNode).get_child(0)
+				var source = Flow.get_node_or_null(SelectedNode)
+				if source == null or source.get_child_count() == 0:
+					break
+				var king = source.get_child(0)
 				var rook = cell.get_child(0)
-				# Using a seperate array because Areas wouldn't be really consistant...
 				king.reparent(Flow.get_node(SpecialArea[1]))
 				rook.reparent(Flow.get_node(SpecialArea[0]))
 				king.position = pos
 				rook.position = pos
-				# We have to get the parent because it will break lmao.
 				UpdateGame(cell)
+				break  # <-- AGREGADO
 	# En Passant
 	elif SelectedNode != "" && cell.get_child_count() != 0 && cell.get_child(0).PieceColor != Turn && cell.get_child(0).name == "Pawn" && SpecialArea.size() != 0 && SpecialArea[0] == cell.name && cell.get_child(0).EnPassant == true:
 		for i in SpecialArea:
 			if i == cell.name:
-				var pawn = Flow.get_node(SelectedNode).get_child(0)
+				var source = Flow.get_node_or_null(SelectedNode)
+				if source == null or source.get_child_count() == 0:
+					break
+				var pawn = source.get_child(0)
 				cell.get_child(0).free()
 				pawn.reparent(Flow.get_node(SpecialArea[1]))
 				pawn.position = pos
 				UpdateGame(cell)
+				break  # <-- AGREGADO
 	# Re-select
 	elif SelectedNode != "" && cell.get_child_count() != 0 && cell.get_child(0).PieceColor == Turn:
 		SelectedNode = Location
 		GetMovableAreas()
-	# Taking over a piece
+	# Capturar pieza enemiga
 	elif SelectedNode != "" && cell.get_child_count() != 0 && cell.get_child(0).PieceColor != Turn:
 		for i in Areas:
 			if i == cell.name:
-				var Piece = Flow.get_node(SelectedNode).get_child(0)
-				# Win conditions
+				var source = Flow.get_node_or_null(SelectedNode)
+				if source == null or source.get_child_count() == 0:
+					break
+				var Piece = source.get_child(0)
 				if cell.get_child(0).name == "King":
 					GameWin.emit()
 				cell.get_child(0).free()
@@ -103,15 +101,20 @@ func _on_flow_send_location(Location: String):
 				Piece.reparent(cell)
 				Piece.position = pos
 				UpdateGame(cell)
-	# Moving a piece
+				break  # <-- AGREGADO
+	# Mover a casilla vacía
 	elif SelectedNode != "" && cell.get_child_count() == 0:
 		for i in Areas:
 			if i == cell.name:
-				var Piece = Flow.get_node(SelectedNode).get_child(0)
+				var source = Flow.get_node_or_null(SelectedNode)
+				if source == null or source.get_child_count() == 0:
+					break
+				var Piece = source.get_child(0)
 				SavedNode = Location
 				Piece.reparent(cell)
 				Piece.position = pos
 				UpdateGame(cell)
+				break  # <-- AGREGADO
 
 func UpdateGame(cell):
 	SelectedNode = ""
@@ -227,12 +230,16 @@ func GetPawn(Piece):
 		if not IsNull(forward) and Flow.get_node(forward).get_child_count() == 0 and can_go.call(forward):
 			Areas.append(forward)
 
-		# Doble paso
-		var double = LocationX + "-" + str(LocationYInt - 2)
+		# Doble paso (camino monotónicamente descendente)
+		var double = LocationX + "-" + str(LocationYInt + 2)
+		var h_from = GetHeight(from_loc)
+		var h_forward = GetHeight(forward)
+		var h_double = GetHeight(double) if not IsNull(double) else 999
 		if not IsNull(double) and Piece.DoubleStart == true \
 				and Flow.get_node(double).get_child_count() == 0 \
 				and Flow.get_node(forward).get_child_count() == 0 \
-				and can_go.call(forward) and can_go.call(double):
+				and h_forward <= h_from \
+				and h_double <= h_forward:
 			Areas.append(double)
 
 		# Capturas en diagonal
@@ -327,96 +334,37 @@ func GetAround(Piece):
 func GetRows():
 	var from_loc = SelectedNode
 	var piece = Flow.get_node(from_loc).get_child(0)
-	print("=== GetRows desde ", from_loc, " (altura ", GetHeight(from_loc), ") ===")
-	var AddX = 1
-	# Horizontal derecha
-	while not IsNull(str(LocationXInt + AddX) + "-" + LocationY):
-		var target = str(LocationXInt + AddX) + "-" + LocationY
-		# Si la tile en el camino es más alta, se bloquea ANTES de pisarla
-		if not CanReach(from_loc, target, piece):
-			break
-		Areas.append(target)
-		if Flow.get_node(target).get_child_count() != 0:
-			break
-		AddX += 1
-	AddX = 1
-	# Horizontal izquierda
-	while not IsNull(str(LocationXInt - AddX) + "-" + LocationY):
-		var target = str(LocationXInt - AddX) + "-" + LocationY
-		if not CanReach(from_loc, target, piece):
-			break
-		Areas.append(target)
-		if Flow.get_node(target).get_child_count() != 0:
-			break
-		AddX += 1
-	var AddY = 1
-	# Vertical abajo
-	while not IsNull(LocationX + "-" + str(LocationYInt + AddY)):
-		var target = LocationX + "-" + str(LocationYInt + AddY)
-		if not CanReach(from_loc, target, piece):
-			break
-		Areas.append(target)
-		if Flow.get_node(target).get_child_count() != 0:
-			break
-		AddY += 1
-	AddY = 1
-	# Vertical arriba
-	while not IsNull(LocationX + "-" + str(LocationYInt - AddY)):
-		var target = LocationX + "-" + str(LocationYInt - AddY)
-		if not CanReach(from_loc, target, piece):
-			break
-		Areas.append(target)
-		if Flow.get_node(target).get_child_count() != 0:
-			break
-		AddY += 1
+	_walk_line(from_loc, piece, 1, 0)
+	_walk_line(from_loc, piece, -1, 0)
+	_walk_line(from_loc, piece, 0, 1)
+	_walk_line(from_loc, piece, 0, -1)
 	
 func GetDiagonals():
 	var from_loc = SelectedNode
 	var piece = Flow.get_node(from_loc).get_child(0)
-	var AddX = 1
-	var AddY = 1
-	while not IsNull(str(LocationXInt + AddX) + "-" + str(LocationYInt + AddY)):
-		var target = str(LocationXInt + AddX) + "-" + str(LocationYInt + AddY)
-		if not CanReach(from_loc, target, piece):
-			break
+	_walk_line(from_loc, piece, 1, 1)
+	_walk_line(from_loc, piece, -1, 1)
+	_walk_line(from_loc, piece, 1, -1)
+	_walk_line(from_loc, piece, -1, -1)
+		
+# Recorre una línea desde from_loc en la dirección (dx, dy), agregando tiles a Areas
+# siguiendo la regla: cada paso debe ser a una altura ≤ a la del paso anterior (camino descendente).
+# El caballo está exento (pero no usa esta función igual).
+func _walk_line(from_loc: String, piece, dx: int, dy: int):
+	var prev_height = GetHeight(from_loc)
+	var step = 1
+	while true:
+		var target = str(LocationXInt + dx * step) + "-" + str(LocationYInt + dy * step)
+		if IsNull(target):
+			return
+		var target_height = GetHeight(target)
+		if target_height > prev_height:
+			return
 		Areas.append(target)
 		if Flow.get_node(target).get_child_count() != 0:
-			break
-		AddX += 1
-		AddY += 1
-	AddX = 1
-	AddY = 1
-	while not IsNull(str(LocationXInt - AddX) + "-" + str(LocationYInt + AddY)):
-		var target = str(LocationXInt - AddX) + "-" + str(LocationYInt + AddY)
-		if not CanReach(from_loc, target, piece):
-			break
-		Areas.append(target)
-		if Flow.get_node(target).get_child_count() != 0:
-			break
-		AddX += 1
-		AddY += 1
-	AddX = 1
-	AddY = 1
-	while not IsNull(str(LocationXInt + AddX) + "-" + str(LocationYInt - AddY)):
-		var target = str(LocationXInt + AddX) + "-" + str(LocationYInt - AddY)
-		if not CanReach(from_loc, target, piece):
-			break
-		Areas.append(target)
-		if Flow.get_node(target).get_child_count() != 0:
-			break
-		AddX += 1
-		AddY += 1
-	AddX = 1
-	AddY = 1
-	while not IsNull(str(LocationXInt - AddX) + "-" + str(LocationYInt - AddY)):
-		var target = str(LocationXInt - AddX) + "-" + str(LocationYInt - AddY)
-		if not CanReach(from_loc, target, piece):
-			break
-		Areas.append(target)
-		if Flow.get_node(target).get_child_count() != 0:
-			break
-		AddX += 1
-		AddY += 1
+			return
+		prev_height = target_height
+		step += 1
 
 func GetHorse():
 	var TheX = 2
@@ -484,10 +432,29 @@ func IsNull(Location):
 
 # Checking for a king.
 func CheckKing(Children):
+	# Guardar el estado original para no romperlo
+	var saved_selected = SelectedNode
+	var saved_areas = Areas.duplicate()
+	var saved_special = SpecialArea.duplicate()
+	var saved_x = LocationX
+	var saved_y = LocationY
+	var saved_xi = LocationXInt
+	var saved_yi = LocationYInt
+	
 	for i in Children:
 		if i.get_child_count() != 0:
 			SelectedNode = str(i.name)
+			_update_location_vars(SelectedNode)  # <-- clave
 			GetMovableAreas()
+	
+	# Restaurar (excepto SelectedNode que el código original también vaciaba)
+	SelectedNode = saved_selected
+	Areas = saved_areas
+	SpecialArea = saved_special
+	LocationX = saved_x
+	LocationY = saved_y
+	LocationXInt = saved_xi
+	LocationYInt = saved_yi
 
 # Helper function
 func IsKing(Location):
@@ -627,3 +594,15 @@ func CanReach(FromLoc: String, ToLoc: String, Piece) -> bool:
 	var result = h_to <= h_from
 	print("CanReach ", Piece.name, " ", FromLoc, "(h=", h_from, ") -> ", ToLoc, "(h=", h_to, ") = ", result)
 	return result
+	
+# Actualiza LocationX/Y/XInt/YInt a partir de un string "X-Y"
+func _update_location_vars(Location: String):
+	var number = 0
+	LocationX = ""
+	LocationY = ""
+	while Location.substr(number, 1) != "-":
+		LocationX += Location.substr(number, 1)
+		number += 1
+	LocationY = Location.substr(number + 1)
+	LocationXInt = int(LocationX)
+	LocationYInt = int(LocationY)
