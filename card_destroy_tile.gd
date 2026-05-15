@@ -38,7 +38,7 @@ func _on_tile_clicked(Location: String):
 	
 	# Destruir la tile
 	Board.DestroyedTiles[Location] = true
-	cell.modulate = Color(0.1, 0.1, 0.1, 0.5)
+	cell.modulate = Board.DestroyedTileColor
 	
 	SelectingTile = false
 	text = "Sacar tile"

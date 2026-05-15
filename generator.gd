@@ -43,7 +43,7 @@ func _ready():
 			# Si arrancamos vacío, marcamos todas como destruidas
 			if StartEmpty:
 				Board.DestroyedTiles[temp.name] = true
-				temp.modulate = Color(0.1, 0.1, 0.1, 0.5)
+				temp.modulate = Board.DestroyedTileColor
 			NumberX += 1
 		NumberY += 1
 		NumberX = 0

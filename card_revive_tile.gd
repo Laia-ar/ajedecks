@@ -32,7 +32,7 @@ func _on_tile_clicked(Location: String):
 	
 	# Resucitar la tile
 	Board.DestroyedTiles.erase(Location)
-	cell.modulate = Color(1, 1, 1, 1)
+	cell.modulate = Board.ActiveTileColor
 	
 	SelectingTile = false
 	text = "Agregar tile"

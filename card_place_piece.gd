@@ -17,8 +17,20 @@ var BaseText: String = ""
 func _ready():
 	BaseText = _build_label()
 	text = BaseText
+	_load_icon()
+	custom_minimum_size = Vector2(0, 22)
 	pressed.connect(_on_pressed)
 	Flow.SendLocation.connect(_on_tile_clicked)
+
+func _load_icon():
+	var prefix = "W" if PieceColor == 0 else "B"
+	var path = "res://ChessTextures/" + prefix + PieceType + ".svg"
+	var texture = ResourceLoader.load(path)
+	if texture == null:
+		return
+	var image = texture.get_image()
+	image.resize(16, 16, Image.INTERPOLATE_LANCZOS)
+	icon = ImageTexture.create_from_image(image)
 
 func _build_label() -> String:
 	var color_name = "Blanco" if PieceColor == 0 else "Negro"
@@ -44,11 +56,13 @@ func _on_tile_clicked(Location: String):
 	if not Selecting:
 		return
 	
-	# No se puede colocar en tile destruida (inactiva)
-	if Board.DestroyedTiles.has(Location):
-		return
-	
 	var cell = Flow.get_node(Location)
+	
+	# Si la tile está destruida, la revivimos automáticamente
+	if Board.DestroyedTiles.has(Location):
+		Board.DestroyedTiles.erase(Location)
+		cell.modulate = Board.ActiveTileColor
+	
 	# No se puede colocar si ya hay pieza
 	if cell.get_child_count() != 0:
 		return

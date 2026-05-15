@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://c57vujh20ndv0"]
+[gd_scene load_steps=20 format=3 uid="uid://c57vujh20ndv0"]
 
 [ext_resource type="Script" path="res://generator.gd" id="1_ckrtr"]
 [ext_resource type="Script" path="res://game.gd" id="1_f1l42"]
@@ -17,6 +17,8 @@
 [ext_resource type="Script" path="res://reset_button.gd" id="15_mmcrq"]
 [ext_resource type="Script" path="res://save_button.gd" id="16_ccxe3"]
 [ext_resource type="Script" path="res://load_button.gd" id="17_3qfpr"]
+[ext_resource type="Script" path="res://card_destroy_region.gd" id="18_abc12"]
+[ext_resource type="Script" path="res://card_revive_region.gd" id="19_def34"]
 
 [node name="Board" type="Control"]
 layout_mode = 3
@@ -209,6 +211,18 @@ script = ExtResource("13_kaqiq")
 BoardPath = NodePath("../..")
 FlowPath = NodePath("../../Flow")
 
+[node name="DestroyRegionCard" type="Button" parent="PiecePalette"]
+layout_mode = 2
+script = ExtResource("18_abc12")
+BoardPath = NodePath("../..")
+FlowPath = NodePath("../../Flow")
+
+[node name="ReviveRegionCard" type="Button" parent="PiecePalette"]
+layout_mode = 2
+script = ExtResource("19_def34")
+BoardPath = NodePath("../..")
+FlowPath = NodePath("../../Flow")
+
 [node name="ModeToggle" type="Button" parent="."]
 layout_mode = 1
 anchors_preset = -1
@@ -218,7 +232,7 @@ anchor_right = 23.225
 anchor_bottom = 1.3
 script = ExtResource("14_1lhue")
 BoardPath = NodePath("..")
-PaletteButtons = Array[NodePath]([NodePath("../DestroyTileCard"), NodePath("../ReviveTileCard"), NodePath("../PiecePalette/PlacePawnWhite"), NodePath("../PiecePalette/PlaceRookWhite"), NodePath("../PiecePalette/PlaceKnightWhite"), NodePath("../PiecePalette/PlaceBishopWhite"), NodePath("../PiecePalette/PlaceQueenWhite"), NodePath("../PiecePalette/PlaceKingWhite"), NodePath("../PiecePalette/PlacePawnBlack"), NodePath("../PiecePalette/PlaceRookBlack"), NodePath("../PiecePalette/PlaceKnightBlack"), NodePath("../PiecePalette/PlaceBishopBlack"), NodePath("../PiecePalette/PlaceQueenBlack"), NodePath("../PiecePalette/PlaceKingBlack"), NodePath("../PiecePalette/RemovePiece")])
+PaletteButtons = Array[NodePath]([NodePath("../DestroyTileCard"), NodePath("../ReviveTileCard"), NodePath("../PiecePalette/PlacePawnWhite"), NodePath("../PiecePalette/PlaceRookWhite"), NodePath("../PiecePalette/PlaceKnightWhite"), NodePath("../PiecePalette/PlaceBishopWhite"), NodePath("../PiecePalette/PlaceQueenWhite"), NodePath("../PiecePalette/PlaceKingWhite"), NodePath("../PiecePalette/PlacePawnBlack"), NodePath("../PiecePalette/PlaceRookBlack"), NodePath("../PiecePalette/PlaceKnightBlack"), NodePath("../PiecePalette/PlaceBishopBlack"), NodePath("../PiecePalette/PlaceQueenBlack"), NodePath("../PiecePalette/PlaceKingBlack"), NodePath("../PiecePalette/RemovePiece"), NodePath("../PiecePalette/DestroyRegionCard"), NodePath("../PiecePalette/ReviveRegionCard")])
 
 [node name="ResetButton" type="Button" parent="."]
 layout_mode = 1

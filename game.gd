@@ -30,6 +30,10 @@ var Areas: PackedStringArray
 # Tiles destruidas por cartas. Las piezas no pueden moverse a estas casillas.
 var DestroyedTiles: Dictionary = {}
 
+# Colores de tiles para el editor
+var ActiveTileColor: Color = Color(0.78, 0.82, 0.86, 1.0)
+var DestroyedTileColor: Color = Color(0.18, 0.18, 0.20, 0.6)
+
 var SpecialArea: PackedStringArray
 
 func _on_flow_send_location(Location: String):
@@ -448,14 +452,14 @@ func DeserializeBoard(data: Dictionary):
 		if tile.get_child_count() > 0:
 			tile.get_child(0).queue_free()
 		DestroyedTiles[tile.name] = true
-		tile.modulate = Color(0.1, 0.1, 0.1, 0.5)
+		tile.modulate = DestroyedTileColor
 	
 	# 2. Activar las tiles del save
 	for loc in data.active_tiles:
 		var tile = Flow.get_node_or_null(loc)
 		if tile != null:
 			DestroyedTiles.erase(loc)
-			tile.modulate = Color(1, 1, 1, 1)
+			tile.modulate = ActiveTileColor
 	
 	# 3. Poner las piezas
 	for piece_data in data.pieces:

@@ -10,6 +10,7 @@ var Selecting: bool = false
 
 func _ready():
 	text = "Borrar pieza"
+	custom_minimum_size = Vector2(0, 22)
 	pressed.connect(_on_pressed)
 	Flow.SendLocation.connect(_on_tile_clicked)
 
