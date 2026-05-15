@@ -237,12 +237,12 @@ ModeTogglePath = NodePath("../ModeToggle")
 visible = false
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 13.675
-anchor_top = 6.775
-anchor_right = 19.65
-anchor_bottom = 10.15
+anchor_left = 8.825
+anchor_top = 4.675
+anchor_right = 24.5
+anchor_bottom = 13.525
+offset_left = -3.05176e-05
 offset_right = -6.10352e-05
-offset_bottom = -3.05176e-05
 
 [node name="Label" type="Label" parent="SaveDialog"]
 layout_mode = 1
@@ -285,29 +285,33 @@ text = "Guardar"
 visible = false
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 13.7
-anchor_top = 6.775
-anchor_right = 19.725
-anchor_bottom = 10.125
+anchor_left = 10.65
+anchor_top = 4.5
+anchor_right = 23.825
+anchor_bottom = 11.825
+offset_left = -3.05176e-05
 offset_bottom = -3.05176e-05
 
 [node name="Label" type="Label" parent="LoadDialog"]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.282
-anchor_top = 0.052
-anchor_right = 0.714
+anchor_left = 0.522
+anchor_top = 0.038
+anchor_right = 0.954
 anchor_bottom = 0.224
-offset_left = 0.038002
-offset_top = 0.0320001
-offset_right = -0.0740051
-offset_bottom = -0.0160007
+offset_left = -0.0939941
+offset_top = -0.134006
+offset_right = -0.206024
+offset_bottom = -4.284
 text = "Elegí un save:"
 
 [node name="FileList" type="ItemList" parent="LoadDialog"]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.465
+anchor_bottom = 0.631
+offset_right = -0.0550232
+offset_bottom = 0.116989
 
 [node name="Confirm" type="Button" parent="LoadDialog"]
 layout_mode = 1
