@@ -18,6 +18,8 @@ var LocationYInt: int
 # Modo actual: false = Edit, true = Play
 var PlayMode: bool = false
 
+var TileHeights: Dictionary = {}
+
 # This is the board buttons.
 @export_node_path("FlowContainer") var BoardPath
 @onready var Flow = get_node(BoardPath)
@@ -210,128 +212,204 @@ func FinalizePromotion(Selection):
 	get_node("Promotion").visible = false
 
 func GetPawn(Piece):
-	# This is for going from the bottom to the top, also known as the white pawns.
+	var from_loc = SelectedNode
+	# Helper para chequear si la pieza puede entrar a una tile dada
+	var can_go = func(target): return CanReach(from_loc, target, Piece)
+	
+	# White pawns (suben, o sea Y disminuye)
 	if Piece.PieceColor == 0:
-		if not IsNull(LocationX + "-" + str(LocationYInt - 1)) && Flow.get_node(LocationX + "-" + str(LocationYInt - 1)).get_child_count() == 0:
-			Areas.append(LocationX + "-" + str(LocationYInt - 1))
-		if not IsNull(LocationX + "-" + str(LocationYInt - 2)) && Piece.DoubleStart == true && Flow.get_node(LocationX + "-" + str(LocationYInt - 2)).get_child_count() == 0:
-			Areas.append(LocationX + "-" + str(LocationYInt - 2))
-		# Attacking squares
-		if not IsNull(str(LocationXInt - 1) + "-" + str(LocationYInt - 1)) && Flow.get_node(str(LocationXInt - 1) + "-" + str(LocationYInt - 1)).get_child_count() == 1:
-			Areas.append(str(LocationXInt - 1) + "-" + str(LocationYInt - 1))
-		if not IsNull(str(LocationXInt + 1) + "-" + str(LocationYInt - 1)) && Flow.get_node(str(LocationXInt + 1) + "-" + str(LocationYInt - 1)).get_child_count() == 1:
-			Areas.append(str(LocationXInt + 1) + "-" + str(LocationYInt - 1))
-		# En passant
-		if not IsNull(str(LocationXInt - 1) + "-" + LocationY) && not IsNull(str(LocationXInt - 1) + "-" + str(LocationYInt - 1)):
-			if Flow.get_node(str(LocationXInt - 1) + "-" + LocationY).get_child_count() == 1 && Flow.get_node(str(LocationXInt - 1) + "-" + str(LocationYInt - 1)).get_child_count() != 1:
-				SpecialArea.append(str(LocationXInt - 1) + "-" + LocationY)
-				SpecialArea.append(str(LocationXInt - 1) + "-" + str(LocationYInt - 1))
-		if not IsNull(str(LocationXInt + 1) + "-" + LocationY) && not IsNull(str(LocationXInt + 1) + "-" + str(LocationYInt - 1)):
-			if Flow.get_node(str(LocationXInt + 1) + "-" + LocationY).get_child_count() == 1 && Flow.get_node(str(LocationXInt + 1) + "-" + str(LocationYInt - 1)).get_child_count() != 1:
-				SpecialArea.append(str(LocationXInt + 1) + "-" + LocationY)
-				SpecialArea.append(str(LocationXInt + 1) + "-" + str(LocationYInt - 1))
-	# Black pawns
+		# Avance simple
+		var forward = LocationX + "-" + str(LocationYInt - 1)
+		if not IsNull(forward) and Flow.get_node(forward).get_child_count() == 0 and can_go.call(forward):
+			Areas.append(forward)
+		
+		# Doble paso
+		var double = LocationX + "-" + str(LocationYInt - 2)
+		if not IsNull(double) and Piece.DoubleStart == true \
+				and Flow.get_node(double).get_child_count() == 0 \
+				and Flow.get_node(forward).get_child_count() == 0 \
+				and can_go.call(forward) and can_go.call(double):
+			Areas.append(double)
+		
+		# Capturas en diagonal
+		var diag_left = str(LocationXInt - 1) + "-" + str(LocationYInt - 1)
+		if not IsNull(diag_left) and Flow.get_node(diag_left).get_child_count() == 1 and can_go.call(diag_left):
+			Areas.append(diag_left)
+		var diag_right = str(LocationXInt + 1) + "-" + str(LocationYInt - 1)
+		if not IsNull(diag_right) and Flow.get_node(diag_right).get_child_count() == 1 and can_go.call(diag_right):
+			Areas.append(diag_right)
+		
+		# En passant izquierda
+		var side_left = str(LocationXInt - 1) + "-" + LocationY
+		var ep_left_target = str(LocationXInt - 1) + "-" + str(LocationYInt - 1)
+		if not IsNull(side_left) and not IsNull(ep_left_target):
+			if Flow.get_node(side_left).get_child_count() == 1 \
+					and Flow.get_node(ep_left_target).get_child_count() != 1 \
+					and can_go.call(ep_left_target):
+				SpecialArea.append(side_left)
+				SpecialArea.append(ep_left_target)
+		
+		# En passant derecha
+		var side_right = str(LocationXInt + 1) + "-" + LocationY
+		var ep_right_target = str(LocationXInt + 1) + "-" + str(LocationYInt - 1)
+		if not IsNull(side_right) and not IsNull(ep_right_target):
+			if Flow.get_node(side_right).get_child_count() == 1 \
+					and Flow.get_node(ep_right_target).get_child_count() != 1 \
+					and can_go.call(ep_right_target):
+				SpecialArea.append(side_right)
+				SpecialArea.append(ep_right_target)
+	
+	# Black pawns (bajan, o sea Y aumenta)
 	else:
-		if not IsNull(LocationX + "-" + str(LocationYInt + 1)) && Flow.get_node(LocationX + "-" + str(LocationYInt + 1)).get_child_count() == 0:
-			Areas.append(LocationX + "-" + str(LocationYInt + 1))
-		if not IsNull(LocationX + "-" + str(LocationYInt + 2)) && Piece.DoubleStart == true && Flow.get_node(LocationX + "-" + str(LocationYInt + 2)).get_child_count() == 0:
-			Areas.append(LocationX + "-" + str(LocationYInt + 2))
-		# Attacking squares
-		if not IsNull(str(LocationXInt - 1) + "-" + str(LocationYInt + 1)) && Flow.get_node(str(LocationXInt - 1) + "-" + str(LocationYInt + 1)).get_child_count() == 1:
-			Areas.append(str(LocationXInt - 1) + "-" + str(LocationYInt + 1))
-		if not IsNull(str(LocationXInt + 1) + "-" + str(LocationYInt + 1)) && Flow.get_node(str(LocationXInt + 1) + "-" + str(LocationYInt + 1)).get_child_count() == 1:
-			Areas.append(str(LocationXInt + 1) + "-" + str(LocationYInt + 1))
-		# En passant
-		if not IsNull(str(LocationXInt - 1) + "-" + LocationY) && not IsNull(str(LocationXInt - 1) + "-" + str(LocationYInt + 1)):
-			if Flow.get_node(str(LocationXInt - 1) + "-" + LocationY).get_child_count() == 1 && Flow.get_node(str(LocationXInt - 1) + "-" + str(LocationYInt + 1)).get_child_count() != 1:
-				SpecialArea.append(str(LocationXInt - 1) + "-" + LocationY)
-				SpecialArea.append(str(LocationXInt - 1) + "-" + str(LocationYInt + 1))
-		if not IsNull(str(LocationXInt + 1) + "-" + LocationY) && not IsNull(str(LocationXInt + 1) + "-" + str(LocationYInt + 1)):
-			if Flow.get_node(str(LocationXInt + 1) + "-" + LocationY).get_child_count() == 1 && Flow.get_node(str(LocationXInt + 1) + "-" + str(LocationYInt+ 1)).get_child_count() != 1:
-				SpecialArea.append(str(LocationXInt + 1) + "-" + LocationY)
-				SpecialArea.append(str(LocationXInt + 1) + "-" + str(LocationYInt + 1))
+		# Avance simple
+		var forward = LocationX + "-" + str(LocationYInt + 1)
+		if not IsNull(forward) and Flow.get_node(forward).get_child_count() == 0 and can_go.call(forward):
+			Areas.append(forward)
+		
+		# Doble paso
+		var double = LocationX + "-" + str(LocationYInt + 2)
+		if not IsNull(double) and Piece.DoubleStart == true \
+				and Flow.get_node(double).get_child_count() == 0 \
+				and Flow.get_node(forward).get_child_count() == 0 \
+				and can_go.call(forward) and can_go.call(double):
+			Areas.append(double)
+		
+		# Capturas en diagonal
+		var diag_left = str(LocationXInt - 1) + "-" + str(LocationYInt + 1)
+		if not IsNull(diag_left) and Flow.get_node(diag_left).get_child_count() == 1 and can_go.call(diag_left):
+			Areas.append(diag_left)
+		var diag_right = str(LocationXInt + 1) + "-" + str(LocationYInt + 1)
+		if not IsNull(diag_right) and Flow.get_node(diag_right).get_child_count() == 1 and can_go.call(diag_right):
+			Areas.append(diag_right)
+		
+		# En passant izquierda
+		var side_left = str(LocationXInt - 1) + "-" + LocationY
+		var ep_left_target = str(LocationXInt - 1) + "-" + str(LocationYInt + 1)
+		if not IsNull(side_left) and not IsNull(ep_left_target):
+			if Flow.get_node(side_left).get_child_count() == 1 \
+					and Flow.get_node(ep_left_target).get_child_count() != 1 \
+					and can_go.call(ep_left_target):
+				SpecialArea.append(side_left)
+				SpecialArea.append(ep_left_target)
+		
+		# En passant derecha
+		var side_right = str(LocationXInt + 1) + "-" + LocationY
+		var ep_right_target = str(LocationXInt + 1) + "-" + str(LocationYInt + 1)
+		if not IsNull(side_right) and not IsNull(ep_right_target):
+			if Flow.get_node(side_right).get_child_count() == 1 \
+					and Flow.get_node(ep_right_target).get_child_count() != 1 \
+					and can_go.call(ep_right_target):
+				SpecialArea.append(side_right)
+				SpecialArea.append(ep_right_target)
 
 func GetAround(Piece):
-	# Single Rows
-	if not IsNull(LocationX + "-" + str(LocationYInt + 1)):
-		Areas.append(LocationX + "-" + str(LocationYInt + 1))
-	if not IsNull(LocationX + "-" + str(LocationYInt - 1)):
-		Areas.append(LocationX + "-" + str(LocationYInt - 1))
-	if not IsNull(str(LocationXInt + 1) + "-" + LocationY):
-		Areas.append(str(LocationXInt + 1) + "-" + LocationY)
-	if not IsNull(str(LocationXInt - 1) + "-" + LocationY):
-		Areas.append(str(LocationXInt - 1) + "-" + LocationY)
-	# Diagonal
-	if not IsNull(str(LocationXInt + 1) + "-" + str(LocationYInt + 1)):
-		Areas.append(str(LocationXInt + 1) + "-" + str(LocationYInt + 1))
-	if not IsNull(str(LocationXInt - 1) + "-" + str(LocationYInt + 1)):
-		Areas.append(str(LocationXInt - 1) + "-" + str(LocationYInt + 1))
-	if not IsNull(str(LocationXInt + 1) + "-" + str(LocationYInt - 1)):
-		Areas.append(str(LocationXInt + 1) + "-" + str(LocationYInt - 1))
-	if not IsNull(str(LocationXInt - 1) + "-" + str(LocationYInt - 1)):
-		Areas.append(str(LocationXInt - 1) + "-" + str(LocationYInt - 1))
-	# Castling, if that is the case
+	var from_loc = SelectedNode
+	var candidates = [
+		LocationX + "-" + str(LocationYInt + 1),
+		LocationX + "-" + str(LocationYInt - 1),
+		str(LocationXInt + 1) + "-" + LocationY,
+		str(LocationXInt - 1) + "-" + LocationY,
+		str(LocationXInt + 1) + "-" + str(LocationYInt + 1),
+		str(LocationXInt - 1) + "-" + str(LocationYInt + 1),
+		str(LocationXInt + 1) + "-" + str(LocationYInt - 1),
+		str(LocationXInt - 1) + "-" + str(LocationYInt - 1),
+	]
+	for target in candidates:
+		if not IsNull(target) and CanReach(from_loc, target, Piece):
+			Areas.append(target)
 	if Piece.Castling == true:
 		Castle()
 
 func GetRows():
+	var from_loc = SelectedNode
+	var piece = Flow.get_node(from_loc).get_child(0)
+	print("=== GetRows desde ", from_loc, " (altura ", GetHeight(from_loc), ") ===")
 	var AddX = 1
-	# Getting the horizontal rows first.
+	# Horizontal derecha
 	while not IsNull(str(LocationXInt + AddX) + "-" + LocationY):
-		Areas.append(str(LocationXInt + AddX) + "-" + LocationY)
-		if Flow.get_node(str(LocationXInt + AddX) + "-" + LocationY).get_child_count() != 0:
+		var target = str(LocationXInt + AddX) + "-" + LocationY
+		# Si la tile en el camino es más alta, se bloquea ANTES de pisarla
+		if not CanReach(from_loc, target, piece):
+			break
+		Areas.append(target)
+		if Flow.get_node(target).get_child_count() != 0:
 			break
 		AddX += 1
 	AddX = 1
+	# Horizontal izquierda
 	while not IsNull(str(LocationXInt - AddX) + "-" + LocationY):
-		Areas.append(str(LocationXInt - AddX) + "-" + LocationY)
-		if Flow.get_node(str(LocationXInt - AddX) + "-" + LocationY).get_child_count() != 0:
+		var target = str(LocationXInt - AddX) + "-" + LocationY
+		if not CanReach(from_loc, target, piece):
+			break
+		Areas.append(target)
+		if Flow.get_node(target).get_child_count() != 0:
 			break
 		AddX += 1
 	var AddY = 1
-	# Now we are getting the vertical rows.
+	# Vertical abajo
 	while not IsNull(LocationX + "-" + str(LocationYInt + AddY)):
-		Areas.append(LocationX + "-" + str(LocationYInt + AddY))
-		if Flow.get_node(LocationX + "-" + str(LocationYInt + AddY)).get_child_count() != 0:
+		var target = LocationX + "-" + str(LocationYInt + AddY)
+		if not CanReach(from_loc, target, piece):
+			break
+		Areas.append(target)
+		if Flow.get_node(target).get_child_count() != 0:
 			break
 		AddY += 1
 	AddY = 1
+	# Vertical arriba
 	while not IsNull(LocationX + "-" + str(LocationYInt - AddY)):
-		Areas.append(LocationX + "-" + str(LocationYInt - AddY))
-		if Flow.get_node(LocationX + "-" + str(LocationYInt - AddY)).get_child_count() != 0:
+		var target = LocationX + "-" + str(LocationYInt - AddY)
+		if not CanReach(from_loc, target, piece):
+			break
+		Areas.append(target)
+		if Flow.get_node(target).get_child_count() != 0:
 			break
 		AddY += 1
 	
 func GetDiagonals():
+	var from_loc = SelectedNode
+	var piece = Flow.get_node(from_loc).get_child(0)
 	var AddX = 1
 	var AddY = 1
 	while not IsNull(str(LocationXInt + AddX) + "-" + str(LocationYInt + AddY)):
-		Areas.append(str(LocationXInt + AddX) + "-" + str(LocationYInt + AddY))
-		if Flow.get_node(str(LocationXInt + AddX) + "-" + str(LocationYInt + AddY)).get_child_count() != 0:
+		var target = str(LocationXInt + AddX) + "-" + str(LocationYInt + AddY)
+		if not CanReach(from_loc, target, piece):
+			break
+		Areas.append(target)
+		if Flow.get_node(target).get_child_count() != 0:
 			break
 		AddX += 1
 		AddY += 1
 	AddX = 1
 	AddY = 1
 	while not IsNull(str(LocationXInt - AddX) + "-" + str(LocationYInt + AddY)):
-		Areas.append(str(LocationXInt - AddX) + "-" + str(LocationYInt + AddY))
-		if Flow.get_node(str(LocationXInt - AddX) + "-" + str(LocationYInt + AddY)).get_child_count() != 0:
+		var target = str(LocationXInt - AddX) + "-" + str(LocationYInt + AddY)
+		if not CanReach(from_loc, target, piece):
+			break
+		Areas.append(target)
+		if Flow.get_node(target).get_child_count() != 0:
 			break
 		AddX += 1
 		AddY += 1
 	AddX = 1
 	AddY = 1
 	while not IsNull(str(LocationXInt + AddX) + "-" + str(LocationYInt - AddY)):
-		Areas.append(str(LocationXInt + AddX) + "-" + str(LocationYInt - AddY))
-		if Flow.get_node(str(LocationXInt + AddX) + "-" + str(LocationYInt - AddY)).get_child_count() != 0:
+		var target = str(LocationXInt + AddX) + "-" + str(LocationYInt - AddY)
+		if not CanReach(from_loc, target, piece):
+			break
+		Areas.append(target)
+		if Flow.get_node(target).get_child_count() != 0:
 			break
 		AddX += 1
 		AddY += 1
 	AddX = 1
 	AddY = 1
 	while not IsNull(str(LocationXInt - AddX) + "-" + str(LocationYInt - AddY)):
-		Areas.append(str(LocationXInt - AddX) + "-" + str(LocationYInt - AddY))
-		if Flow.get_node(str(LocationXInt - AddX) + "-" + str(LocationYInt - AddY)).get_child_count() != 0:
+		var target = str(LocationXInt - AddX) + "-" + str(LocationYInt - AddY)
+		if not CanReach(from_loc, target, piece):
+			break
+		Areas.append(target)
+		if Flow.get_node(target).get_child_count() != 0:
 			break
 		AddX += 1
 		AddY += 1
@@ -427,6 +505,8 @@ func SerializeBoard() -> Dictionary:
 		"pieces": []
 	}
 	
+	data["tile_heights"] = TileHeights.duplicate()
+	
 	for tile in Flow.get_children():
 		# Tile activa = no está en DestroyedTiles
 		if not DestroyedTiles.has(tile.name):
@@ -449,6 +529,8 @@ func DeserializeBoard(data: Dictionary):
 			tile.get_child(0).queue_free()
 		DestroyedTiles[tile.name] = true
 		tile.modulate = Color(0.1, 0.1, 0.1, 0.5)
+		
+	TileHeights.clear()
 	
 	# 2. Activar las tiles del save
 	for loc in data.active_tiles:
@@ -456,6 +538,11 @@ func DeserializeBoard(data: Dictionary):
 		if tile != null:
 			DestroyedTiles.erase(loc)
 			tile.modulate = Color(1, 1, 1, 1)
+			
+	for loc in data.get("tile_heights", {}):
+		TileHeights[loc] = data.tile_heights[loc]
+		_update_tile_visual(loc)
+
 	
 	# 3. Poner las piezas
 	for piece_data in data.pieces:
@@ -485,3 +572,54 @@ func _get_piece_scene(piece_type: String) -> PackedScene:
 		"Queen": return Flow.Queen
 		"King": return Flow.King
 	return null
+	
+	# ====================================================================
+# Sistema de alturas
+# ====================================================================
+
+const MIN_HEIGHT = -5
+const MAX_HEIGHT = 5
+
+func GetHeight(Location: String) -> int:
+	return TileHeights.get(Location, 0)
+
+func SetHeight(Location: String, value: int):
+	value = clamp(value, MIN_HEIGHT, MAX_HEIGHT)
+	if value == 0:
+		TileHeights.erase(Location)
+	else:
+		TileHeights[Location] = value
+	_update_tile_visual(Location)
+
+func ChangeHeight(Location: String, delta: int):
+	SetHeight(Location, GetHeight(Location) + delta)
+
+func _update_tile_visual(Location: String):
+	var tile = Flow.get_node_or_null(Location)
+	if tile == null:
+		return
+	var h = GetHeight(Location)
+	var color: Color
+	if DestroyedTiles.has(Location):
+		color = Color(0.1, 0.1, 0.1, 0.5)
+	elif h == 0:
+		color = Color(1, 1, 1, 1)
+	elif h > 0:
+		var t = float(h) / float(MAX_HEIGHT)
+		color = Color(1, 1, 1 - t * 0.7, 1)
+	else:
+		var t = float(-h) / float(-MIN_HEIGHT)
+		color = Color(1 - t * 0.6, 1 - t * 0.4, 1, 1)
+	tile.modulate = color
+	tile.text = str(h) if h != 0 else ""
+	
+	# Devuelve true si la pieza en From puede entrar/capturar en la tile To,
+# considerando alturas. El caballo está exento.
+func CanReach(FromLoc: String, ToLoc: String, Piece) -> bool:
+	if Piece.name == "Knight":
+		return true
+	var h_from = GetHeight(FromLoc)
+	var h_to = GetHeight(ToLoc)
+	var result = h_to <= h_from
+	print("CanReach ", Piece.name, " ", FromLoc, "(h=", h_from, ") -> ", ToLoc, "(h=", h_to, ") = ", result)
+	return result

@@ -14,6 +14,7 @@ func _ready():
 
 func _on_pressed():
 	# Sacar todas las piezas
+	Board.TileHeights.clear()
 	for tile in Flow.get_children():
 		if tile.get_child_count() > 0:
 			tile.get_child(0).queue_free()
