@@ -39,8 +39,13 @@ var DestroyedTileColor: Color = Color(0.18, 0.18, 0.20, 0.6)
 
 var SpecialArea: PackedStringArray
 
+# Si es true, el juego terminó por jaque mate
+var CheckmateDetected: bool = false
+
 func _on_flow_send_location(Location):
 	Location = str(Location)
+	if CheckmateDetected:
+		return
 	# En modo edición, el tablero no juega ajedrez
 	if not PlayMode:
 		return
@@ -502,7 +507,8 @@ func UpdateStatusLabel():
 	var turn_text = "Blanco" if Turn == 0 else "Negro"
 	var status = "Turno: " + turn_text
 	if _is_king_in_check(Turn):
-		if _is_checkmate_approx(Turn):
+		if _is_checkmate_robust(Turn):
+			CheckmateDetected = true
 			status += " — Jaque mate"
 		else:
 			status += " — Jaque"
@@ -517,32 +523,67 @@ func _is_king_in_check(color: int) -> bool:
 					return true
 	return false
 
-func _is_checkmate_approx(color: int) -> bool:
+func _is_checkmate_robust(color: int) -> bool:
 	if not _is_king_in_check(color):
 		return false
 	var saved_selected = SelectedNode
 	var saved_areas = Areas.duplicate()
 	var saved_special = SpecialArea.duplicate()
+	
 	for tile in Flow.get_children():
-		if tile.get_child_count() != 0:
-			var piece = tile.get_child(0)
-			if piece.name == "King" and piece.PieceColor == color:
-				SelectedNode = str(tile.name)
-				var parts = str(tile.name).split("-")
-				LocationX = parts[0]
-				LocationY = parts[1]
-				LocationXInt = int(LocationX)
-				LocationYInt = int(LocationY)
-				GetMovableAreas()
-				var has_moves = Areas.size() > 0
+		if tile.get_child_count() == 0:
+			continue
+		var piece = tile.get_child(0)
+		if piece.PieceColor != color:
+			continue
+		
+		SelectedNode = str(tile.name)
+		var parts = str(tile.name).split("-")
+		LocationX = parts[0]
+		LocationY = parts[1]
+		LocationXInt = int(LocationX)
+		LocationYInt = int(LocationY)
+		GetMovableAreas()
+		
+		var moves = Areas.duplicate()
+		
+		for move_loc in moves:
+			var target = Flow.get_node_or_null(move_loc)
+			if target == null:
+				continue
+			
+			var captured = null
+			if target.get_child_count() != 0:
+				captured = target.get_child(0)
+				target.remove_child(captured)
+			
+			tile.remove_child(piece)
+			target.add_child(piece)
+			piece.position = pos
+			
+			var still_in_check = _is_king_in_check(color)
+			
+			target.remove_child(piece)
+			tile.add_child(piece)
+			piece.position = pos
+			
+			if captured != null:
+				target.add_child(captured)
+				captured.position = pos
+			
+			if not still_in_check:
 				SelectedNode = saved_selected
 				Areas = saved_areas
 				SpecialArea = saved_special
-				return not has_moves
+				return false
+		
+		Areas.clear()
+		SpecialArea.clear()
+	
 	SelectedNode = saved_selected
 	Areas = saved_areas
 	SpecialArea = saved_special
-	return false
+	return true
 		
 # ====================================================================
 # Save / Load
@@ -576,6 +617,7 @@ func SerializeBoard() -> Dictionary:
 	return data
 
 func DeserializeBoard(data: Dictionary):
+	CheckmateDetected = false
 	# 1. Limpiar el tablero actual
 	for tile in Flow.get_children():
 		if tile.get_child_count() > 0:

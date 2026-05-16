@@ -38,3 +38,5 @@ func _on_pressed():
 			piece.Spawned(color)
 			piece.position = Vector2(Flow.TileXSize / 2, Flow.TileYSize / 2)
 			tile.add_child(piece)
+	
+	Board.CheckmateDetected = false

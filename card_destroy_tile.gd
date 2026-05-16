@@ -31,6 +31,8 @@ func _on_pressed():
 		text = "Sacar tile"
 
 func _on_tile_clicked(Location: String):
+	if Board.CheckmateDetected:
+		return
 	if not SelectingTile:
 		return
 	

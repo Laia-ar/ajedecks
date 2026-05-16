@@ -33,3 +33,4 @@ func _on_pressed():
 	Board.SelectedNode = ""
 	Board.Areas.clear()
 	Board.SpecialArea.clear()
+	Board.CheckmateDetected = false

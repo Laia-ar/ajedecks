@@ -36,6 +36,8 @@ func _on_pressed():
 		_reset()
 
 func _on_tile_clicked(Location: String):
+	if Board.CheckmateDetected:
+		return
 	if CurrentState == State.IDLE:
 		return
 

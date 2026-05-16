@@ -31,6 +31,8 @@ func _on_pressed():
 		text = BaseText
 
 func _on_tile_clicked(Location: String):
+	if Board.CheckmateDetected:
+		return
 	if not Selecting:
 		return
 	# No se puede elevar una tile destruida

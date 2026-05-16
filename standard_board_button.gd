@@ -30,3 +30,4 @@ func _on_pressed():
 	
 	# Colocar piezas standard
 	Flow.RegularGame()
+	Board.CheckmateDetected = false

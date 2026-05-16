@@ -27,6 +27,8 @@ func _on_pressed():
 		text = "Agregar tile"
 
 func _on_tile_clicked(Location: String):
+	if Board.CheckmateDetected:
+		return
 	if not SelectingTile:
 		return
 	
