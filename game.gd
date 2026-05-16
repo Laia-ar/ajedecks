@@ -506,7 +506,7 @@ func UpdateStatusLabel():
 		return
 	var turn_text = "Blanco" if Turn == 0 else "Negro"
 	var status = "Turno: " + turn_text
-	if _is_king_in_check(Turn):
+	if _is_king_in_check_raw(Turn):
 		if _is_checkmate_robust(Turn):
 			CheckmateDetected = true
 			status += " — Jaque mate"
@@ -514,21 +514,73 @@ func UpdateStatusLabel():
 			status += " — Jaque"
 	StatusLabel.text = status
 
-func _is_king_in_check(color: int) -> bool:
+func _is_king_in_check_raw(color: int) -> bool:
+	# Buscar la ubicación del rey
+	var king_loc = ""
 	for tile in Flow.get_children():
 		if tile.get_child_count() != 0:
 			var piece = tile.get_child(0)
 			if piece.name == "King" and piece.PieceColor == color:
-				if piece.modulate == Color(1, 0, 0, 1):
-					return true
+				king_loc = str(tile.name)
+				break
+	if king_loc == "":
+		return false
+	
+	var saved_selected = SelectedNode
+	var saved_areas = Areas.duplicate()
+	var saved_special = SpecialArea.duplicate()
+	var saved_loc_x = LocationX
+	var saved_loc_y = LocationY
+	var saved_loc_x_int = LocationXInt
+	var saved_loc_y_int = LocationYInt
+	
+	for tile in Flow.get_children():
+		if tile.get_child_count() == 0:
+			continue
+		var piece = tile.get_child(0)
+		if piece.PieceColor == color:
+			continue  # Solo piezas enemigas
+		
+		SelectedNode = str(tile.name)
+		var parts = str(tile.name).split("-")
+		LocationX = parts[0]
+		LocationY = parts[1]
+		LocationXInt = int(LocationX)
+		LocationYInt = int(LocationY)
+		GetMovableAreas()
+		
+		if Areas.has(king_loc) or SpecialArea.has(king_loc):
+			SelectedNode = saved_selected
+			Areas = saved_areas
+			SpecialArea = saved_special
+			LocationX = saved_loc_x
+			LocationY = saved_loc_y
+			LocationXInt = saved_loc_x_int
+			LocationYInt = saved_loc_y_int
+			return true
+		
+		Areas.clear()
+		SpecialArea.clear()
+	
+	SelectedNode = saved_selected
+	Areas = saved_areas
+	SpecialArea = saved_special
+	LocationX = saved_loc_x
+	LocationY = saved_loc_y
+	LocationXInt = saved_loc_x_int
+	LocationYInt = saved_loc_y_int
 	return false
 
 func _is_checkmate_robust(color: int) -> bool:
-	if not _is_king_in_check(color):
+	if not _is_king_in_check_raw(color):
 		return false
 	var saved_selected = SelectedNode
 	var saved_areas = Areas.duplicate()
 	var saved_special = SpecialArea.duplicate()
+	var saved_loc_x = LocationX
+	var saved_loc_y = LocationY
+	var saved_loc_x_int = LocationXInt
+	var saved_loc_y_int = LocationYInt
 	
 	for tile in Flow.get_children():
 		if tile.get_child_count() == 0:
@@ -561,7 +613,7 @@ func _is_checkmate_robust(color: int) -> bool:
 			target.add_child(piece)
 			piece.position = pos
 			
-			var still_in_check = _is_king_in_check(color)
+			var still_in_check = _is_king_in_check_raw(color)
 			
 			target.remove_child(piece)
 			tile.add_child(piece)
@@ -575,6 +627,10 @@ func _is_checkmate_robust(color: int) -> bool:
 				SelectedNode = saved_selected
 				Areas = saved_areas
 				SpecialArea = saved_special
+				LocationX = saved_loc_x
+				LocationY = saved_loc_y
+				LocationXInt = saved_loc_x_int
+				LocationYInt = saved_loc_y_int
 				return false
 		
 		Areas.clear()
@@ -583,6 +639,10 @@ func _is_checkmate_robust(color: int) -> bool:
 	SelectedNode = saved_selected
 	Areas = saved_areas
 	SpecialArea = saved_special
+	LocationX = saved_loc_x
+	LocationY = saved_loc_y
+	LocationXInt = saved_loc_x_int
+	LocationYInt = saved_loc_y_int
 	return true
 		
 # ====================================================================
