@@ -226,6 +226,12 @@ func FinalizePromotion(Selection):
 		Flow.get_node(SavedNode).add_child(NewPiece)
 	Piece.free()
 	get_node("Promotion").visible = false
+	
+	# Verificar jaque/jaque mate después de la coronación
+	var things = Flow.get_children()
+	CheckKing(things)
+	SelectedNode = ""
+	UpdateStatusLabel()
 
 func GetPawn(Piece):
 	var from_loc = SelectedNode
