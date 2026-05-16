@@ -48,8 +48,12 @@ func _on_tile_clicked(Location: String):
 	if CurrentState == State.WAITING_SECOND:
 		_apply_region(FirstCorner, Location)
 		FirstCorner = ""
-		CurrentState = State.WAITING_FIRST
-		text = "Elegí la primera esquina..."
+		if Board.PlayMode:
+			Board.EndTurn()
+			Deactivate()
+		else:
+			CurrentState = State.WAITING_FIRST
+			text = "Elegí la primera esquina..."
 
 func _apply_region(corner1: String, corner2: String):
 	var coords1 = _parse_coords(corner1)

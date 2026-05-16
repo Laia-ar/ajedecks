@@ -243,7 +243,8 @@ anchor_right = 23.225
 anchor_bottom = 1.3
 script = ExtResource("14_1lhue")
 BoardPath = NodePath("..")
-PaletteButtons = Array[NodePath]([NodePath("../DestroyTileCard"), NodePath("../ReviveTileCard"), NodePath("../PiecePalette/PlacePawnWhite"), NodePath("../PiecePalette/PlaceRookWhite"), NodePath("../PiecePalette/PlaceKnightWhite"), NodePath("../PiecePalette/PlaceBishopWhite"), NodePath("../PiecePalette/PlaceQueenWhite"), NodePath("../PiecePalette/PlaceKingWhite"), NodePath("../PiecePalette/PlacePawnBlack"), NodePath("../PiecePalette/PlaceRookBlack"), NodePath("../PiecePalette/PlaceKnightBlack"), NodePath("../PiecePalette/PlaceBishopBlack"), NodePath("../PiecePalette/PlaceQueenBlack"), NodePath("../PiecePalette/PlaceKingBlack"), NodePath("../PiecePalette/RemovePiece"), NodePath("../PiecePalette/DestroyRegionCard"), NodePath("../PiecePalette/ReviveRegionCard"), NodePath("../StandardButton"), NodePath("../RandomButton")])
+PaletteButtons = Array[NodePath]([NodePath("../PiecePalette/PlacePawnWhite"), NodePath("../PiecePalette/PlaceRookWhite"), NodePath("../PiecePalette/PlaceKnightWhite"), NodePath("../PiecePalette/PlaceBishopWhite"), NodePath("../PiecePalette/PlaceQueenWhite"), NodePath("../PiecePalette/PlaceKingWhite"), NodePath("../PiecePalette/PlacePawnBlack"), NodePath("../PiecePalette/PlaceRookBlack"), NodePath("../PiecePalette/PlaceKnightBlack"), NodePath("../PiecePalette/PlaceBishopBlack"), NodePath("../PiecePalette/PlaceQueenBlack"), NodePath("../PiecePalette/PlaceKingBlack"), NodePath("../PiecePalette/RemovePiece"), NodePath("../StandardButton"), NodePath("../RandomButton")])
+TilePaletteButtons = Array[NodePath]([NodePath("../DestroyTileCard"), NodePath("../ReviveTileCard"), NodePath("../RaiseTile"), NodePath("../LowerTile"), NodePath("../PiecePalette/DestroyRegionCard"), NodePath("../PiecePalette/ReviveRegionCard")])
 
 [node name="ResetButton" type="Button" parent="."]
 layout_mode = 1

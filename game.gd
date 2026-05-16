@@ -474,6 +474,27 @@ func DeactivateAllPaletteTools():
 		var btn = mode_toggle.get_node_or_null(path)
 		if btn != null and btn.has_method("Deactivate"):
 			btn.Deactivate()
+	if mode_toggle.TilePaletteButtons != null:
+		for path in mode_toggle.TilePaletteButtons:
+			var btn = mode_toggle.get_node_or_null(path)
+			if btn != null and btn.has_method("Deactivate"):
+				btn.Deactivate()
+
+func EndTurn():
+	SelectedNode = ""
+	Areas.clear()
+	SpecialArea.clear()
+	var things = Flow.get_children()
+	for i in things:
+		if i.get_child_count() != 0:
+			i.get_child(0).modulate = Color(1, 1, 1, 1)
+	CheckKing(things)
+	SelectedNode = ""
+	if Turn == 0:
+		Turn = 1
+	else:
+		Turn = 0
+	UpdateStatusLabel()
 
 func UpdateStatusLabel():
 	if StatusLabel == null:

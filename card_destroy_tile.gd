@@ -45,3 +45,7 @@ func _on_tile_clicked(Location: String):
 	# Destruir la tile
 	Board.DestroyedTiles[Location] = true
 	Board.SetHeight(Location, 0)
+	
+	if Board.PlayMode:
+		Board.EndTurn()
+		Deactivate()

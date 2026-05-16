@@ -17,7 +17,13 @@ func _ready():
 	pressed.connect(_on_pressed)
 	Flow.SendLocation.connect(_on_tile_clicked)
 
+func Deactivate():
+	Selecting = false
+	text = BaseText
+
 func _on_pressed():
+	if not Selecting:
+		Board.DeactivateAllPaletteTools()
 	Selecting = !Selecting
 	if Selecting:
 		text = "Elegí una tile..."
@@ -33,5 +39,6 @@ func _on_tile_clicked(Location: String):
 	
 	Board.ChangeHeight(Location, Delta)
 	
-	Selecting = false
-	text = BaseText
+	if Board.PlayMode:
+		Board.EndTurn()
+		Deactivate()

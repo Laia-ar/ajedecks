@@ -39,3 +39,7 @@ func _on_tile_clicked(Location: String):
 	# Resucitar la tile
 	Board.DestroyedTiles.erase(Location)
 	cell.modulate = Board.ActiveTileColor
+	
+	if Board.PlayMode:
+		Board.EndTurn()
+		Deactivate()
