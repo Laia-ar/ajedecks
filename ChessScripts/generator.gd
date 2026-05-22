@@ -1,7 +1,7 @@
 extends FlowContainer
 
-@export var BoardXSize = 12
-@export var BoardYSize = 12
+@export var BoardXSize = 20
+@export var BoardYSize = 20
 
 @export var TileXSize: float = 25
 @export var TileYSize: float = 25

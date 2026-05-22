@@ -35,12 +35,16 @@ var DestroyedTiles: Dictionary = {}
 
 # Colores de tiles para el editor
 var ActiveTileColor: Color = Color(0.78, 0.82, 0.86, 1.0)
-var DestroyedTileColor: Color = Color(0.18, 0.18, 0.20, 0.6)
+var DestroyedTileColor: Color = Color(0.55, 0.55, 0.60, 0.25)
 
 var SpecialArea: PackedStringArray
 
 # Si es true, el juego terminó por jaque mate
 var CheckmateDetected: bool = false
+
+func _input(event):
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
+		DeactivateAllPaletteTools()
 
 func _on_flow_send_location(Location):
 	Location = str(Location)
