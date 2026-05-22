@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=3 uid="uid://c57vujh20ndv0"]
+[gd_scene load_steps=25 format=3 uid="uid://c57vujh20ndv0"]
 
 [ext_resource type="Script" path="res://generator.gd" id="1_ckrtr"]
 [ext_resource type="Script" path="res://game.gd" id="1_f1l42"]
@@ -23,6 +23,7 @@
 [ext_resource type="Script" path="res://standard_board_button.gd" id="20_stnd"]
 [ext_resource type="Script" path="res://random_board_button.gd" id="21_rand"]
 [ext_resource type="Script" path="res://tile_config_toggle.gd" id="23_p1t8u"]
+[ext_resource type="Script" path="res://puzzle_generator.gd" id="24_3hkmn"]
 
 [node name="Board" type="Control"]
 layout_mode = 3
@@ -449,6 +450,19 @@ offset_left = -6.10352e-05
 script = ExtResource("23_p1t8u")
 raise_tile_button = NodePath("../RaiseTile")
 lower_tile_button = NodePath("../LowerTile")
+
+[node name="PuzzleGenerator" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 16.05
+anchor_top = 15.85
+anchor_right = 19.25
+anchor_bottom = 16.875
+offset_left = -6.10352e-05
+script = ExtResource("24_3hkmn")
+BoardPath = NodePath("..")
+OffsetX = 4
+OffsetY = 4
 
 [connection signal="GameWin" from="." to="GameWin" method="_on_board_game_win"]
 [connection signal="SendLocation" from="Flow" to="." method="_on_flow_send_location"]
