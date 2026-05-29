@@ -1,4 +1,4 @@
-[gd_scene load_steps=25 format=3 uid="uid://c57vujh20ndv0"]
+[gd_scene load_steps=26 format=3 uid="uid://c57vujh20ndv0"]
 
 [ext_resource type="Script" path="res://generator.gd" id="1_ckrtr"]
 [ext_resource type="Script" path="res://game.gd" id="1_f1l42"]
@@ -24,6 +24,7 @@
 [ext_resource type="Script" path="res://random_board_button.gd" id="21_rand"]
 [ext_resource type="Script" path="res://tile_config_toggle.gd" id="23_p1t8u"]
 [ext_resource type="Script" path="res://puzzle_generator.gd" id="24_3hkmn"]
+[ext_resource type="Script" path="res://delete_button.gd" id="25_dbtn"]
 
 [node name="Board" type="Control"]
 layout_mode = 3
@@ -388,6 +389,19 @@ offset_bottom = -0.0120087
 text = "Cancelar
 "
 
+[node name="Delete" type="Button" parent="LoadDialog"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.37
+anchor_top = 0.687
+anchor_right = 0.6
+anchor_bottom = 0.918
+offset_left = 0.0830002
+offset_top = -0.0580063
+offset_right = -0.0730057
+offset_bottom = -0.0120087
+text = "Borrar"
+
 [node name="SaveButton" type="Button" parent="."]
 layout_mode = 1
 anchors_preset = -1
@@ -410,6 +424,19 @@ anchor_bottom = 1.2
 offset_left = -6.10352e-05
 offset_right = -6.10352e-05
 script = ExtResource("17_3qfpr")
+BoardPath = NodePath("..")
+LoadDialogPath = NodePath("../LoadDialog")
+
+[node name="DeleteButton" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 15.25
+anchor_top = 3.0
+anchor_right = 17.9
+anchor_bottom = 3.925
+offset_left = -6.10352e-05
+offset_right = -6.10352e-05
+script = ExtResource("25_dbtn")
 BoardPath = NodePath("..")
 LoadDialogPath = NodePath("../LoadDialog")
 
