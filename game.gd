@@ -42,9 +42,17 @@ var SpecialArea: PackedStringArray
 # Si es true, el juego terminó por jaque mate
 var CheckmateDetected: bool = false
 
+var RightClickedTile: String = ""
+
+@onready var PiecePicker = get_node_or_null("PiecePicker")
+
+var PaintStrokeTiles: Dictionary = {}
+
 func _input(event):
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
 		DeactivateAllPaletteTools()
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and not event.pressed:
+		PaintStrokeTiles.clear()
 
 func _on_flow_send_location(Location):
 	Location = str(Location)
@@ -52,6 +60,11 @@ func _on_flow_send_location(Location):
 		return
 	# En modo edición, el tablero no juega ajedrez
 	if not PlayMode:
+		if not IsAnyPaletteToolActive():
+			if PaintStrokeTiles.has(Location):
+				return
+			ToggleTile(Location)
+			PaintStrokeTiles[Location] = true
 		return
 	
 	# Don't update ANYTHING if you still need to promote!
@@ -481,6 +494,38 @@ func IsKing(Location):
 	if TheNode != null && TheNode.get_child_count() != 0 && TheNode.get_child(0).PieceColor != Turn && TheNode.get_child(0).name == "King":
 		TheNode.get_child(0).modulate = Color(1, 0, 0, 1)
 
+func IsAnyPaletteToolActive() -> bool:
+	var mode_toggle = get_node_or_null("ModeToggle")
+	if mode_toggle == null:
+		return false
+	var all_paths = mode_toggle.PaletteButtons + mode_toggle.TilePaletteButtons
+	for path in all_paths:
+		var btn = get_node_or_null(path)
+		if btn == null:
+			continue
+		if btn.get("Selecting") == true:
+			return true
+		if btn.get("SelectingTile") == true:
+			return true
+		if btn.get("CurrentState") != null and btn.get("CurrentState") != 0:
+			return true
+	return false
+
+func ToggleTile(Location: String):
+	var tile = Flow.get_node_or_null(Location)
+	if tile == null:
+		return
+	if DestroyedTiles.has(Location):
+		DestroyedTiles.erase(Location)
+		_update_tile_visual(Location)
+	else:
+		if tile.get_child_count() > 0:
+			tile.get_child(0).queue_free()
+			return
+		DestroyedTiles[Location] = true
+		TileHeights.erase(Location)
+		_update_tile_visual(Location)
+
 func DeactivateAllPaletteTools():
 	var mode_toggle = get_node_or_null("ModeToggle")
 	if mode_toggle == null:
@@ -727,6 +772,43 @@ func DeserializeBoard(data: Dictionary):
 	SelectedNode = ""
 	Areas.clear()
 	SpecialArea.clear()
+
+func _on_tile_right_clicked(tile_name: String):
+	if PlayMode or CheckmateDetected:
+		return
+	DeactivateAllPaletteTools()
+	RightClickedTile = tile_name
+	if PiecePicker != null:
+		PiecePicker.position = get_global_mouse_position() - global_position
+		PiecePicker.visible = true
+
+func PlacePieceFromMenu(piece_type: String, color: int):
+	if RightClickedTile == "":
+		return
+	var tile = Flow.get_node_or_null(RightClickedTile)
+	if tile == null:
+		return
+	if DestroyedTiles.has(RightClickedTile):
+		DestroyedTiles.erase(RightClickedTile)
+		_update_tile_visual(RightClickedTile)
+	if tile.get_child_count() > 0:
+		tile.get_child(0).queue_free()
+	var scene = _get_piece_scene(piece_type)
+	if scene == null:
+		PiecePicker.visible = false
+		RightClickedTile = ""
+		return
+	var piece = scene.instantiate()
+	piece.Spawned(color)
+	piece.position = Vector2(Flow.TileXSize / 2, Flow.TileYSize / 2)
+	tile.add_child(piece)
+	PiecePicker.visible = false
+	RightClickedTile = ""
+
+func ClosePieceMenu():
+	if PiecePicker != null:
+		PiecePicker.visible = false
+	RightClickedTile = ""
 
 func _get_piece_scene(piece_type: String) -> PackedScene:
 	match piece_type:

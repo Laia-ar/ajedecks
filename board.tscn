@@ -491,9 +491,90 @@ BoardPath = NodePath("..")
 OffsetX = 4
 OffsetY = 4
 
+[node name="PiecePicker" type="Panel" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+offset_right = 220.0
+offset_bottom = 280.0
+
+[node name="GridContainer" type="GridContainer" parent="PiecePicker"]
+layout_mode = 1
+anchors_preset = -1
+offset_left = 10.0
+offset_top = 10.0
+offset_right = 210.0
+offset_bottom = 240.0
+columns = 3
+
+[node name="PawnWhite" type="Button" parent="PiecePicker/GridContainer"]
+layout_mode = 2
+text = "Peón B"
+
+[node name="RookWhite" type="Button" parent="PiecePicker/GridContainer"]
+layout_mode = 2
+text = "Torre B"
+
+[node name="KnightWhite" type="Button" parent="PiecePicker/GridContainer"]
+layout_mode = 2
+text = "Caballo B"
+
+[node name="BishopWhite" type="Button" parent="PiecePicker/GridContainer"]
+layout_mode = 2
+text = "Alfil B"
+
+[node name="QueenWhite" type="Button" parent="PiecePicker/GridContainer"]
+layout_mode = 2
+text = "Dama B"
+
+[node name="KingWhite" type="Button" parent="PiecePicker/GridContainer"]
+layout_mode = 2
+text = "Rey B"
+
+[node name="PawnBlack" type="Button" parent="PiecePicker/GridContainer"]
+layout_mode = 2
+text = "Peón N"
+
+[node name="RookBlack" type="Button" parent="PiecePicker/GridContainer"]
+layout_mode = 2
+text = "Torre N"
+
+[node name="KnightBlack" type="Button" parent="PiecePicker/GridContainer"]
+layout_mode = 2
+text = "Caballo N"
+
+[node name="BishopBlack" type="Button" parent="PiecePicker/GridContainer"]
+layout_mode = 2
+text = "Alfil N"
+
+[node name="QueenBlack" type="Button" parent="PiecePicker/GridContainer"]
+layout_mode = 2
+text = "Dama N"
+
+[node name="KingBlack" type="Button" parent="PiecePicker/GridContainer"]
+layout_mode = 2
+text = "Rey N"
+
+[node name="Cancel" type="Button" parent="PiecePicker/GridContainer"]
+layout_mode = 2
+text = "Cancelar"
+
 [connection signal="GameWin" from="." to="GameWin" method="_on_board_game_win"]
 [connection signal="SendLocation" from="Flow" to="." method="_on_flow_send_location"]
 [connection signal="pressed" from="Promotion/Rook" to="." method="FinalizePromotion" binds= ["Rook"]]
 [connection signal="pressed" from="Promotion/Bishop" to="." method="FinalizePromotion" binds= ["Bishop"]]
 [connection signal="pressed" from="Promotion/Knight" to="." method="FinalizePromotion" binds= ["Knight"]]
 [connection signal="pressed" from="Promotion/Queen" to="." method="FinalizePromotion" binds= ["Queen"]]
+[connection signal="pressed" from="PiecePicker/GridContainer/PawnWhite" to="." method="PlacePieceFromMenu" binds= ["Pawn", 0]]
+[connection signal="pressed" from="PiecePicker/GridContainer/RookWhite" to="." method="PlacePieceFromMenu" binds= ["Rook", 0]]
+[connection signal="pressed" from="PiecePicker/GridContainer/KnightWhite" to="." method="PlacePieceFromMenu" binds= ["Knight", 0]]
+[connection signal="pressed" from="PiecePicker/GridContainer/BishopWhite" to="." method="PlacePieceFromMenu" binds= ["Bishop", 0]]
+[connection signal="pressed" from="PiecePicker/GridContainer/QueenWhite" to="." method="PlacePieceFromMenu" binds= ["Queen", 0]]
+[connection signal="pressed" from="PiecePicker/GridContainer/KingWhite" to="." method="PlacePieceFromMenu" binds= ["King", 0]]
+[connection signal="pressed" from="PiecePicker/GridContainer/PawnBlack" to="." method="PlacePieceFromMenu" binds= ["Pawn", 1]]
+[connection signal="pressed" from="PiecePicker/GridContainer/RookBlack" to="." method="PlacePieceFromMenu" binds= ["Rook", 1]]
+[connection signal="pressed" from="PiecePicker/GridContainer/KnightBlack" to="." method="PlacePieceFromMenu" binds= ["Knight", 1]]
+[connection signal="pressed" from="PiecePicker/GridContainer/BishopBlack" to="." method="PlacePieceFromMenu" binds= ["Bishop", 1]]
+[connection signal="pressed" from="PiecePicker/GridContainer/QueenBlack" to="." method="PlacePieceFromMenu" binds= ["Queen", 1]]
+[connection signal="pressed" from="PiecePicker/GridContainer/KingBlack" to="." method="PlacePieceFromMenu" binds= ["King", 1]]
+[connection signal="pressed" from="PiecePicker/GridContainer/Cancel" to="." method="ClosePieceMenu"]

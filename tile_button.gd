@@ -5,6 +5,11 @@ var Flow
 
 func _ready():
 	pressed.connect(func(): Flow.SendLocation.emit(str(name)))
+	mouse_entered.connect(_on_mouse_entered)
+
+func _on_mouse_entered():
+	if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and not Board.PlayMode and not get_viewport().gui_is_dragging():
+		Flow.SendLocation.emit(str(name))
 
 func _get_drag_data(at_position):
 	if Board.PlayMode:
@@ -35,3 +40,8 @@ func _drop_data(at_position, data):
 	var piece = data.piece
 	piece.reparent(self)
 	piece.position = Vector2(Flow.TileXSize / 2, Flow.TileYSize / 2)
+
+func _gui_input(event):
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
+		accept_event()
+		Board._on_tile_right_clicked(name)
