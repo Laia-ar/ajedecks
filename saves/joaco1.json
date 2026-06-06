@@ -1,0 +1,22 @@
+{
+  "active_tiles": [
+    "7-15",
+    "8-15"
+  ],
+  "board_x": 20,
+  "board_y": 20,
+  "pieces": [
+    {
+      "color": 0,
+      "location": "7-15",
+      "type": "Pawn"
+    },
+    {
+      "color": 0,
+      "location": "8-15",
+      "type": "Pawn"
+    }
+  ],
+  "turn": 0,
+  "version": 1
+}

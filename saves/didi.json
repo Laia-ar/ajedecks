@@ -1,0 +1,33 @@
+{
+  "active_tiles": [
+    "9-13",
+    "10-13",
+    "11-13",
+    "12-13",
+    "9-14",
+    "10-14",
+    "11-14",
+    "12-14"
+  ],
+  "board_x": 20,
+  "board_y": 20,
+  "pieces": [
+    {
+      "color": 1,
+      "location": "11-13",
+      "type": "Pawn"
+    },
+    {
+      "color": 0,
+      "location": "11-14",
+      "type": "Pawn"
+    },
+    {
+      "color": 0,
+      "location": "12-14",
+      "type": "Pawn"
+    }
+  ],
+  "turn": 0,
+  "version": 1
+}
