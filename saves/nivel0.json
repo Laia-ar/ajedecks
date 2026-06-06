@@ -1,0 +1,31 @@
+{
+  "active_tiles": [
+    "7-9",
+    "9-9",
+    "11-9"
+  ],
+  "board_x": 20,
+  "board_y": 20,
+  "pieces": [
+    {
+      "color": 1,
+      "location": "7-9",
+      "type": "King"
+    },
+    {
+      "color": 0,
+      "location": "9-9",
+      "type": "Rook"
+    },
+    {
+      "color": 0,
+      "location": "11-9",
+      "type": "King"
+    }
+  ],
+  "tile_heights": {
+
+  },
+  "turn": 0,
+  "version": 1
+}

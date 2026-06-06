@@ -1,0 +1,42 @@
+{
+  "active_tiles": [
+    "9-7",
+    "10-7",
+    "11-7",
+    "9-8",
+    "10-8",
+    "11-8",
+    "9-9",
+    "10-9",
+    "11-9"
+  ],
+  "board_x": 20,
+  "board_y": 20,
+  "pieces": [
+    {
+      "color": 1,
+      "location": "9-7",
+      "type": "King"
+    },
+    {
+      "color": 1,
+      "location": "9-8",
+      "type": "Pawn"
+    },
+    {
+      "color": 0,
+      "location": "11-8",
+      "type": "Pawn"
+    },
+    {
+      "color": 0,
+      "location": "11-9",
+      "type": "King"
+    }
+  ],
+  "tile_heights": {
+    "10-7": 1
+  },
+  "turn": 0,
+  "version": 1
+}
