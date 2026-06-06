@@ -6,7 +6,7 @@ extends Button
 @onready var Board = get_node(BoardPath)
 @onready var LoadDialog = get_node(LoadDialogPath)
 
-const SAVE_DIR = "user://saves/"
+const SAVE_DIR = "res://saves/"
 
 func _ready():
 	text = "🗑 Delete"

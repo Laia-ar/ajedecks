@@ -6,13 +6,15 @@ extends Button
 @onready var Board = get_node(BoardPath)
 @onready var SaveDialog = get_node(SaveDialogPath)
 
-const SAVE_DIR = "user://saves/"
+const SAVE_DIR = "res://saves/"
 
 func _ready():
 	text = "💾 Save"
 	pressed.connect(_on_pressed)
-	# Asegurarse que existe la carpeta
-	DirAccess.make_dir_recursive_absolute(SAVE_DIR)
+	# Los puzzles se guardan dentro del proyecto para poder versionarlos.
+	var error = DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(SAVE_DIR))
+	if error != OK:
+		push_error("No se pudo crear el directorio de guardado: " + SAVE_DIR)
 	# Conectar el botón confirmar del diálogo
 	SaveDialog.get_node("Confirm").pressed.connect(_on_confirm)
 
