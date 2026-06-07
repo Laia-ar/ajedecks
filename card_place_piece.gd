@@ -67,7 +67,7 @@ func _on_tile_clicked(Location: String):
 	# Si la tile está destruida, la revivimos automáticamente
 	if Board.DestroyedTiles.has(Location):
 		Board.DestroyedTiles.erase(Location)
-		cell.modulate = Board.ActiveTileColor
+		Board.UpdateTileVisual(Location)
 	
 	# No se puede colocar si ya hay pieza
 	if cell.get_child_count() != 0:

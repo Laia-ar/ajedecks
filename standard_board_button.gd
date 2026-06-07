@@ -26,7 +26,7 @@ func _on_pressed():
 			Board.DestroyedTiles.erase(loc)
 			var tile = Flow.get_node_or_null(loc)
 			if tile != null:
-				tile.modulate = Board.ActiveTileColor
+				Board.UpdateTileVisual(loc)
 	
 	# Colocar piezas standard
 	Flow.RegularGame()

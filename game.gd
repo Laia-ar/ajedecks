@@ -33,9 +33,10 @@ var Areas: PackedStringArray
 # Tiles destruidas por cartas. Las piezas no pueden moverse a estas casillas.
 var DestroyedTiles: Dictionary = {}
 
-# Colores de tiles para el editor
-var ActiveTileColor: Color = Color(0.78, 0.82, 0.86, 1.0)
-var DestroyedTileColor: Color = Color(0.55, 0.55, 0.60, 0.25)
+# Colores clásicos de tablero. Las tiles eliminadas quedan grises y translúcidas.
+var LightTileColor: Color = Color("#f0d9b5")
+var DarkTileColor: Color = Color("#b58863")
+var DestroyedTileColor: Color = Color(0.35, 0.35, 0.35, 0.22)
 
 var SpecialArea: PackedStringArray
 
@@ -738,7 +739,7 @@ func DeserializeBoard(data: Dictionary):
 		if tile.get_child_count() > 0:
 			tile.get_child(0).queue_free()
 		DestroyedTiles[tile.name] = true
-		tile.modulate = DestroyedTileColor
+		UpdateTileVisual(tile.name)
 
 	TileHeights.clear()
 	
@@ -747,7 +748,7 @@ func DeserializeBoard(data: Dictionary):
 		var tile = Flow.get_node_or_null(loc)
 		if tile != null:
 			DestroyedTiles.erase(loc)
-			tile.modulate = ActiveTileColor
+			UpdateTileVisual(loc)
 
 	for loc in data.get("tile_heights", {}):
 		TileHeights[loc] = data.tile_heights[loc]
@@ -810,6 +811,13 @@ func ClosePieceMenu():
 		PiecePicker.visible = false
 	RightClickedTile = ""
 
+func RemovePieceFromMenu():
+	if RightClickedTile != "":
+		var tile = Flow.get_node_or_null(RightClickedTile)
+		if tile != null and tile.get_child_count() > 0:
+			tile.get_child(0).queue_free()
+	ClosePieceMenu()
+
 func _get_piece_scene(piece_type: String) -> PackedScene:
 	match piece_type:
 		"Pawn": return Flow.Pawn
@@ -841,7 +849,13 @@ func SetHeight(Location: String, value: int):
 func ChangeHeight(Location: String, delta: int):
 	SetHeight(Location, GetHeight(Location) + delta)
 
-func _update_tile_visual(Location: String):
+func GetTileColor(Location: String) -> Color:
+	var coordinates = Location.split("-")
+	if coordinates.size() != 2:
+		return LightTileColor
+	return LightTileColor if (int(coordinates[0]) + int(coordinates[1])) % 2 == 0 else DarkTileColor
+
+func UpdateTileVisual(Location: String):
 	var tile = Flow.get_node_or_null(Location)
 	if tile == null:
 		return
@@ -850,15 +864,19 @@ func _update_tile_visual(Location: String):
 	if DestroyedTiles.has(Location):
 		color = DestroyedTileColor
 	elif h == 0:
-		color = ActiveTileColor
+		color = GetTileColor(Location)
 	elif h > 0:
 		var t = float(h) / float(MAX_HEIGHT)
-		color = Color(1, 1, 1 - t * 0.7, 1)
+		color = GetTileColor(Location).lerp(Color(1, 0.85, 0.25, 1), t * 0.65)
 	else:
 		var t = float(-h) / float(-MIN_HEIGHT)
-		color = Color(1 - t * 0.6, 1 - t * 0.4, 1, 1)
-	tile.modulate = color
+		color = GetTileColor(Location).lerp(Color(0.25, 0.55, 1, 1), t * 0.65)
+	if tile.has_method("SetTileColor"):
+		tile.SetTileColor(color)
 	tile.text = str(h) if h != 0 else ""
+
+func _update_tile_visual(Location: String):
+	UpdateTileVisual(Location)
 
 	# Devuelve true si la pieza en From puede entrar/capturar en la tile To,
 # considerando alturas. El caballo está exento.

@@ -77,7 +77,7 @@ func _apply_region(corner1: String, corner2: String):
 			if Board.DestroyedTiles.has(loc):
 				continue
 			Board.DestroyedTiles[loc] = true
-			cell.modulate = Board.DestroyedTileColor
+			Board.UpdateTileVisual(loc)
 
 func _parse_coords(loc: String) -> Vector2i:
 	var parts = loc.split("-")

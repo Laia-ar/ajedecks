@@ -7,6 +7,22 @@ func _ready():
 	pressed.connect(func(): Flow.SendLocation.emit(str(name)))
 	mouse_entered.connect(_on_mouse_entered)
 
+func SetTileColor(color: Color):
+	var normal_style = StyleBoxFlat.new()
+	normal_style.bg_color = color
+	set("theme_override_styles/normal", normal_style)
+
+	var hover_style = normal_style.duplicate()
+	hover_style.bg_color = color.lightened(0.08)
+	set("theme_override_styles/hover", hover_style)
+
+	var pressed_style = normal_style.duplicate()
+	pressed_style.bg_color = color.darkened(0.08)
+	set("theme_override_styles/pressed", pressed_style)
+
+	var focus_style = StyleBoxEmpty.new()
+	set("theme_override_styles/focus", focus_style)
+
 func _on_mouse_entered():
 	if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and not Board.PlayMode and not get_viewport().gui_is_dragging():
 		Flow.SendLocation.emit(str(name))

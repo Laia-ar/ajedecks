@@ -73,7 +73,7 @@ func _apply_region(corner1: String, corner2: String):
 				Board.DestroyedTiles.erase(loc)
 				var cell = Flow.get_node_or_null(loc)
 				if cell != null:
-					cell.modulate = Board.ActiveTileColor
+					Board.UpdateTileVisual(loc)
 
 func _parse_coords(loc: String) -> Vector2i:
 	var parts = loc.split("-")

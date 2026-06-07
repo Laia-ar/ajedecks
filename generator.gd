@@ -3,8 +3,8 @@ extends FlowContainer
 @export var BoardXSize = 12
 @export var BoardYSize = 12
 
-@export var TileXSize: float = 25
-@export var TileYSize: float = 25
+@export var TileXSize: float = 42
+@export var TileYSize: float = 42
 
 # Lo dejamos en false: arrancamos sin piezas y sin tiles activas
 @export var PlayRegularGame: bool = false
@@ -27,13 +27,14 @@ signal SendLocation(Location: String)
 func _ready():
 	if BoardXSize < 0 || BoardYSize < 0:
 		return
+	var board_size = Vector2(BoardXSize * TileXSize, BoardYSize * TileYSize)
+	custom_minimum_size = board_size
+	size = board_size
 	var NumberX: int = 0
 	var NumberY: int = 0
 	var TileButtonScript = preload("res://tile_button.gd")
 	# Crear los botones del tablero
 	while NumberY != BoardYSize:
-		self.size.y += TileYSize + 5
-		self.size.x += TileXSize + 5
 		while NumberX != BoardXSize:
 			var temp = TileButtonScript.new()
 			temp.set_custom_minimum_size(Vector2(TileXSize, TileYSize))
@@ -44,12 +45,19 @@ func _ready():
 			# Si arrancamos vacío, marcamos todas como destruidas
 			if StartEmpty:
 				Board.DestroyedTiles[temp.name] = true
-				temp.modulate = Board.DestroyedTileColor
+				temp.SetTileColor(Board.DestroyedTileColor)
+			else:
+				temp.SetTileColor(Board.GetTileColor(temp.name))
 			NumberX += 1
 		NumberY += 1
 		NumberX = 0
+	_center_board()
+	get_viewport().size_changed.connect(_center_board)
 	if PlayRegularGame == true:
 		RegularGame()
+
+func _center_board():
+	position = (get_viewport_rect().size - size) / 2.0
 
 # Esta función ya no se usa con StartEmpty=true, pero la dejamos por si querés
 # volver al modo clásico cambiando los flags.

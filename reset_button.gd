@@ -22,7 +22,7 @@ func _on_pressed():
 	# Marcar todas las tiles como destruidas (estado inicial)
 	for tile in Flow.get_children():
 		Board.DestroyedTiles[tile.name] = true
-		tile.modulate = Board.DestroyedTileColor
+		Board.UpdateTileVisual(tile.name)
 	
 	# Volver a modo Edit
 	if Board.PlayMode:
