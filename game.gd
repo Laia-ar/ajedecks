@@ -42,6 +42,8 @@ var SpecialArea: PackedStringArray
 
 # Si es true, el juego terminó por jaque mate
 var CheckmateDetected: bool = false
+var AIThinking: bool = false
+var BlackKingEngine = preload("res://black_king_ai.gd").new()
 
 var RightClickedTile: String = ""
 
@@ -57,7 +59,7 @@ func _input(event):
 
 func _on_flow_send_location(Location):
 	Location = str(Location)
-	if CheckmateDetected:
+	if CheckmateDetected or AIThinking:
 		return
 	# En modo edición, el tablero no juega ajedrez
 	if not PlayMode:
@@ -173,6 +175,7 @@ func UpdateGame(cell):
 		Turn = 0
 	
 	UpdateStatusLabel()
+	_schedule_black_king_turn()
 
 # Below is the movement that is used for the pieces
 func GetMovableAreas():
@@ -555,6 +558,41 @@ func EndTurn():
 		Turn = 1
 	else:
 		Turn = 0
+	UpdateStatusLabel()
+	_schedule_black_king_turn()
+
+func _schedule_black_king_turn():
+	if not PlayMode or Turn != 1 or CheckmateDetected or AIThinking:
+		return
+	AIThinking = true
+	call_deferred("_run_black_king_turn")
+
+func _run_black_king_turn():
+	if not PlayMode or Turn != 1 or CheckmateDetected:
+		AIThinking = false
+		return
+
+	var move: Dictionary = BlackKingEngine.choose_move(self)
+	if move.is_empty():
+		AIThinking = false
+		UpdateStatusLabel()
+		return
+
+	var source = Flow.get_node(move.from)
+	var target = Flow.get_node(move.to)
+	var king = source.get_child(0)
+	if target.get_child_count() > 0:
+		target.get_child(0).free()
+	king.reparent(target)
+	king.position = pos
+	king.Castling = false
+
+	Turn = 0
+	SelectedNode = ""
+	Areas.clear()
+	SpecialArea.clear()
+	AIThinking = false
+	CheckKing(Flow.get_children())
 	UpdateStatusLabel()
 
 func UpdateStatusLabel():

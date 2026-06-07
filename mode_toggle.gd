@@ -19,9 +19,11 @@ func _on_pressed():
 		text = "Editar"
 		_set_palette_enabled(false)
 		Board.UpdateStatusLabel()
+		Board._schedule_black_king_turn()
 	else:
 		text = "Jugar"
 		_set_palette_enabled(true)
+		Board.AIThinking = false
 		if Board.StatusLabel != null:
 			Board.StatusLabel.visible = false
 
