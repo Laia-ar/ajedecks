@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3 uid="uid://c57vujh20ndv0"]
+[gd_scene load_steps=23 format=3 uid="uid://c57vujh20ndv0"]
 
 [ext_resource type="Script" path="res://generator.gd" id="1_ckrtr"]
 [ext_resource type="Script" path="res://game.gd" id="1_f1l42"]
@@ -21,6 +21,7 @@
 [ext_resource type="Script" path="res://delete_button.gd" id="25_dbtn"]
 [ext_resource type="Script" path="res://puzzle_info.gd" id="26_pinfo"]
 [ext_resource type="Script" path="res://ui_layout.gd" id="27_ui"]
+[ext_resource type="Script" path="res://piece_picker.gd" id="28_picker"]
 
 [node name="Board" type="Control"]
 layout_mode = 3
@@ -317,19 +318,16 @@ text = "Borrar"
 
 [node name="PuzzleInfo" type="Panel" parent="."]
 visible = false
-custom_minimum_size = Vector2(340, 230)
 layout_mode = 0
-offset_left = 900.0
-offset_top = 160.0
-offset_right = 1240.0
-offset_bottom = 390.0
+offset_right = 220.0
+offset_bottom = 290.0
 script = ExtResource("26_pinfo")
 
 [node name="ToggleButton" type="Button" parent="PuzzleInfo"]
 layout_mode = 0
 offset_left = 8.0
 offset_top = 8.0
-offset_right = 332.0
+offset_right = 212.0
 offset_bottom = 42.0
 text = "Información del puzzle ▲"
 
@@ -337,9 +335,8 @@ text = "Información del puzzle ▲"
 layout_mode = 0
 offset_left = 12.0
 offset_top = 50.0
-offset_right = 328.0
-offset_bottom = 218.0
-fit_content = true
+offset_right = 208.0
+offset_bottom = 278.0
 
 [node name="SaveButton" type="Button" parent="."]
 layout_mode = 1
@@ -395,74 +392,80 @@ OffsetY = 4
 
 [node name="PiecePicker" type="Panel" parent="."]
 visible = false
-layout_mode = 1
-anchors_preset = -1
-offset_right = 220.0
-offset_bottom = 280.0
+z_index = 50
+layout_mode = 0
+offset_right = 392.0
+offset_bottom = 222.0
+script = ExtResource("28_picker")
+
+[node name="Title" type="Label" parent="PiecePicker"]
+layout_mode = 0
+offset_left = 14.0
+offset_top = 10.0
+offset_right = 378.0
+offset_bottom = 30.0
+text = "Seleccionar pieza"
 
 [node name="GridContainer" type="GridContainer" parent="PiecePicker"]
-layout_mode = 1
-anchors_preset = -1
-offset_left = 10.0
-offset_top = 10.0
-offset_right = 210.0
-offset_bottom = 240.0
-columns = 3
+layout_mode = 0
+offset_left = 14.0
+offset_top = 34.0
+offset_right = 378.0
+offset_bottom = 154.0
+theme_override_constants/h_separation = 5
+theme_override_constants/v_separation = 5
+columns = 6
 
 [node name="PawnWhite" type="Button" parent="PiecePicker/GridContainer"]
 layout_mode = 2
-text = "Peón B"
 
 [node name="RookWhite" type="Button" parent="PiecePicker/GridContainer"]
 layout_mode = 2
-text = "Torre B"
 
 [node name="KnightWhite" type="Button" parent="PiecePicker/GridContainer"]
 layout_mode = 2
-text = "Caballo B"
 
 [node name="BishopWhite" type="Button" parent="PiecePicker/GridContainer"]
 layout_mode = 2
-text = "Alfil B"
 
 [node name="QueenWhite" type="Button" parent="PiecePicker/GridContainer"]
 layout_mode = 2
-text = "Dama B"
 
 [node name="KingWhite" type="Button" parent="PiecePicker/GridContainer"]
 layout_mode = 2
-text = "Rey B"
 
 [node name="PawnBlack" type="Button" parent="PiecePicker/GridContainer"]
 layout_mode = 2
-text = "Peón N"
 
 [node name="RookBlack" type="Button" parent="PiecePicker/GridContainer"]
 layout_mode = 2
-text = "Torre N"
 
 [node name="KnightBlack" type="Button" parent="PiecePicker/GridContainer"]
 layout_mode = 2
-text = "Caballo N"
 
 [node name="BishopBlack" type="Button" parent="PiecePicker/GridContainer"]
 layout_mode = 2
-text = "Alfil N"
 
 [node name="QueenBlack" type="Button" parent="PiecePicker/GridContainer"]
 layout_mode = 2
-text = "Dama N"
 
 [node name="KingBlack" type="Button" parent="PiecePicker/GridContainer"]
 layout_mode = 2
-text = "Rey N"
 
-[node name="RemovePiece" type="Button" parent="PiecePicker/GridContainer"]
-layout_mode = 2
+[node name="RemovePiece" type="Button" parent="PiecePicker"]
+layout_mode = 0
+offset_left = 14.0
+offset_top = 168.0
+offset_right = 190.0
+offset_bottom = 208.0
 text = "Borrar pieza"
 
-[node name="Cancel" type="Button" parent="PiecePicker/GridContainer"]
-layout_mode = 2
+[node name="Cancel" type="Button" parent="PiecePicker"]
+layout_mode = 0
+offset_left = 202.0
+offset_top = 168.0
+offset_right = 378.0
+offset_bottom = 208.0
 text = "Cancelar"
 
 [node name="UILayout" type="Node" parent="."]
@@ -486,5 +489,5 @@ script = ExtResource("27_ui")
 [connection signal="pressed" from="PiecePicker/GridContainer/BishopBlack" to="." method="PlacePieceFromMenu" binds= ["Bishop", 1]]
 [connection signal="pressed" from="PiecePicker/GridContainer/QueenBlack" to="." method="PlacePieceFromMenu" binds= ["Queen", 1]]
 [connection signal="pressed" from="PiecePicker/GridContainer/KingBlack" to="." method="PlacePieceFromMenu" binds= ["King", 1]]
-[connection signal="pressed" from="PiecePicker/GridContainer/RemovePiece" to="." method="RemovePieceFromMenu"]
-[connection signal="pressed" from="PiecePicker/GridContainer/Cancel" to="." method="ClosePieceMenu"]
+[connection signal="pressed" from="PiecePicker/RemovePiece" to="." method="RemovePieceFromMenu"]
+[connection signal="pressed" from="PiecePicker/Cancel" to="." method="ClosePieceMenu"]

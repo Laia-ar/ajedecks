@@ -780,7 +780,12 @@ func _on_tile_right_clicked(tile_name: String):
 	DeactivateAllPaletteTools()
 	RightClickedTile = tile_name
 	if PiecePicker != null:
-		PiecePicker.position = get_global_mouse_position() - global_position
+		var desired_position = get_global_mouse_position() - global_position
+		var viewport_size = get_viewport_rect().size
+		PiecePicker.position = Vector2(
+			clampf(desired_position.x, 12.0, viewport_size.x - PiecePicker.size.x - 12.0),
+			clampf(desired_position.y, 12.0, viewport_size.y - PiecePicker.size.y - 12.0)
+		)
 		PiecePicker.visible = true
 
 func PlacePieceFromMenu(piece_type: String, color: int):

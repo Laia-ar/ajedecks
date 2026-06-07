@@ -7,6 +7,8 @@ var IsExpanded := true
 
 func _ready():
 	ToggleButton.pressed.connect(_on_toggle_pressed)
+	InformationText.scroll_active = true
+	InformationText.fit_content = false
 	visible = false
 
 func set_information(information: String):
@@ -27,5 +29,4 @@ func _update_expanded_state():
 		if IsExpanded
 		else "Información del puzzle ▼"
 	)
-	custom_minimum_size.y = 230.0 if IsExpanded else 42.0
-	size.y = custom_minimum_size.y
+	size.y = 290.0 if IsExpanded else 46.0

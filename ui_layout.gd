@@ -13,6 +13,7 @@ const BUTTON_GAP := 10.0
 @onready var LeftPanel: Panel = Board.get_node("LeftToolPanel")
 @onready var RightPanel: Panel = Board.get_node("RightToolPanel")
 @onready var StatusLabel: Label = Board.get_node("StatusLabel")
+@onready var PuzzleInfo: Panel = Board.get_node("PuzzleInfo")
 
 func _ready():
 	get_viewport().size_changed.connect(_layout)
@@ -37,6 +38,8 @@ func _layout():
 	LeftPanel.size = Vector2(PANEL_WIDTH, 258.0)
 	RightPanel.position = Vector2(right_x, board_rect.position.y + 36.0)
 	RightPanel.size = Vector2(PANEL_WIDTH, 158.0)
+	PuzzleInfo.position = Vector2(right_x, RightPanel.position.y + RightPanel.size.y + 14.0)
+	PuzzleInfo.size.x = PANEL_WIDTH
 
 	_layout_top_buttons()
 	_layout_side_panel(LeftPanel, [
@@ -106,6 +109,9 @@ func _apply_styles():
 		for child in dialog.find_children("*", "Button", true, false):
 			_style_button(child, normal, hover, pressed, disabled)
 
+	PuzzleInfo.add_theme_stylebox_override("panel", panel_style)
+	_style_button(PuzzleInfo.get_node("ToggleButton"), normal, hover, pressed, disabled)
+
 	for input in [
 		Board.get_node("SaveDialog/NameInput"),
 		Board.get_node("SaveDialog/InformationInput"),
@@ -132,7 +138,10 @@ func _apply_styles():
 	StatusLabel.add_theme_stylebox_override("normal", _style(Color("#222831"), Color("#39424e"), 8, 1))
 
 func _style_button(button: Button, normal: StyleBox, hover: StyleBox, pressed: StyleBox, disabled: StyleBox):
-	button.custom_minimum_size = Vector2(0, BUTTON_HEIGHT)
+	button.custom_minimum_size = Vector2(
+		button.custom_minimum_size.x,
+		maxf(button.custom_minimum_size.y, BUTTON_HEIGHT)
+	)
 	button.add_theme_font_size_override("font_size", 15)
 	button.add_theme_color_override("font_color", Color("#f3f5f7"))
 	button.add_theme_color_override("font_hover_color", Color.WHITE)
