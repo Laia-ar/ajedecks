@@ -6,6 +6,7 @@ signal GameWin
 var SelectedNode = ""
 # If you don't have a good solution, do your promotions with another variable~
 var SavedNode = ""
+var PromotionEndsTurn: bool = false
 var Turn = 0
 
 # Location on which node was clicked.
@@ -42,12 +43,15 @@ var SpecialArea: PackedStringArray
 
 # Si es true, el juego terminó por jaque mate
 var CheckmateDetected: bool = false
+var DrawDetected: bool = false
 var AIThinking: bool = false
-var BlackKingEngine = preload("res://black_king_ai.gd").new()
+var BlackEngine = preload("res://black_ai.gd").new()
+var PlayStartState: Dictionary = {}
 
 var RightClickedTile: String = ""
 
 @onready var PiecePicker = get_node_or_null("PiecePicker")
+@onready var GameResult = get_node_or_null("GameResult")
 
 var PaintStrokeTiles: Dictionary = {}
 
@@ -117,12 +121,12 @@ func _on_flow_send_location(Location):
 	elif SelectedNode != "" && cell.get_child_count() != 0 && cell.get_child(0).PieceColor != Turn:
 		for i in Areas:
 			if i == cell.name:
+				if cell.get_child(0).name == "King":
+					break
 				var source = Flow.get_node_or_null(SelectedNode)
 				if source == null or source.get_child_count() == 0:
 					break
 				var Piece = source.get_child(0)
-				if cell.get_child(0).name == "King":
-					GameWin.emit()
 				cell.get_child(0).free()
 				SavedNode = Location
 				Piece.reparent(cell)
@@ -175,7 +179,7 @@ func UpdateGame(cell):
 		Turn = 0
 	
 	UpdateStatusLabel()
-	_schedule_black_king_turn()
+	_schedule_black_turn()
 
 # Below is the movement that is used for the pieces
 func GetMovableAreas():
@@ -204,6 +208,30 @@ func PawnPromotion(Piece):
 		get_node("Promotion").visible = true
 	elif IsNull(LocationX + "-" + str(LocationYInt + 1)) && Piece.PieceColor == 1:
 		get_node("Promotion").visible = true
+
+func RequestPromotionAfterTileRemoved(removed_location: String) -> bool:
+	if not PlayMode:
+		return false
+	var removed_parts = removed_location.split("-")
+	if removed_parts.size() != 2:
+		return false
+
+	var removed_x = int(removed_parts[0])
+	var removed_y = int(removed_parts[1])
+	var pawn_y = removed_y + 1 if Turn == 0 else removed_y - 1
+	var pawn_location = str(removed_x) + "-" + str(pawn_y)
+	var pawn_tile = Flow.get_node_or_null(pawn_location)
+	if pawn_tile == null or pawn_tile.get_child_count() == 0:
+		return false
+
+	var pawn = pawn_tile.get_child(0)
+	if pawn.name != "Pawn" or pawn.PieceColor != Turn:
+		return false
+
+	SavedNode = pawn_location
+	PromotionEndsTurn = true
+	get_node("Promotion").visible = true
+	return true
 
 # TODO: Make this less crap
 func FinalizePromotion(Selection):
@@ -252,7 +280,11 @@ func FinalizePromotion(Selection):
 	var things = Flow.get_children()
 	CheckKing(things)
 	SelectedNode = ""
-	UpdateStatusLabel()
+	if PromotionEndsTurn:
+		PromotionEndsTurn = false
+		EndTurn()
+	else:
+		UpdateStatusLabel()
 
 func GetPawn(Piece):
 	var from_loc = SelectedNode
@@ -559,20 +591,20 @@ func EndTurn():
 	else:
 		Turn = 0
 	UpdateStatusLabel()
-	_schedule_black_king_turn()
+	_schedule_black_turn()
 
-func _schedule_black_king_turn():
+func _schedule_black_turn():
 	if not PlayMode or Turn != 1 or CheckmateDetected or AIThinking:
 		return
 	AIThinking = true
-	call_deferred("_run_black_king_turn")
+	call_deferred("_run_black_turn")
 
-func _run_black_king_turn():
+func _run_black_turn():
 	if not PlayMode or Turn != 1 or CheckmateDetected:
 		AIThinking = false
 		return
 
-	var move: Dictionary = BlackKingEngine.choose_move(self)
+	var move: Dictionary = BlackEngine.choose_move(self)
 	if move.is_empty():
 		AIThinking = false
 		UpdateStatusLabel()
@@ -580,12 +612,16 @@ func _run_black_king_turn():
 
 	var source = Flow.get_node(move.from)
 	var target = Flow.get_node(move.to)
-	var king = source.get_child(0)
+	var piece = source.get_child(0)
 	if target.get_child_count() > 0:
 		target.get_child(0).free()
-	king.reparent(target)
-	king.position = pos
-	king.Castling = false
+	piece.reparent(target)
+	piece.position = pos
+	if piece.name == "King" or piece.name == "Rook":
+		piece.Castling = false
+	if piece.name == "Pawn":
+		piece.DoubleStart = false
+		_promote_black_ai_pawn_if_needed(target, piece)
 
 	Turn = 0
 	SelectedNode = ""
@@ -595,19 +631,71 @@ func _run_black_king_turn():
 	CheckKing(Flow.get_children())
 	UpdateStatusLabel()
 
+func _promote_black_ai_pawn_if_needed(tile, pawn):
+	var parts = str(tile.name).split("-")
+	var next_location = parts[0] + "-" + str(int(parts[1]) + 1)
+	if not IsNull(next_location):
+		return
+	var queen = Flow.Queen.instantiate()
+	queen.Spawned(1)
+	queen.position = pos
+	tile.remove_child(pawn)
+	pawn.free()
+	tile.add_child(queen)
+
 func UpdateStatusLabel():
 	if StatusLabel == null:
 		return
 	StatusLabel.visible = PlayMode
 	var turn_text = "Blanco" if Turn == 0 else "Negro"
 	var status = "Turno: " + turn_text
-	if _is_king_in_check_raw(Turn):
-		if _is_checkmate_robust(Turn):
+	var in_check = _is_king_in_check_raw(Turn)
+	var legal_moves = BlackEngine.collect_legal_moves(self, Turn)
+	if legal_moves.is_empty():
+		if in_check:
 			CheckmateDetected = true
-			status += " — Jaque mate"
-		else:
-			status += " — Jaque"
+			AIThinking = false
+			status = "Jaque mate"
+			_show_game_result(
+				"Jaque mate",
+				"Ganan las negras." if Turn == 0 else "Ganan las blancas."
+			)
+		elif Turn == 1:
+			CheckmateDetected = true
+			DrawDetected = true
+			AIThinking = false
+			status = "Tablas por ahogado"
+			_show_game_result("Tablas", "El jugador de turno no tiene movimientos legales.")
+	elif in_check:
+		status += " — Jaque"
 	StatusLabel.text = status
+
+func StartPlaySession():
+	PlayStartState = SerializeBoard().duplicate(true)
+	CheckmateDetected = false
+	DrawDetected = false
+	AIThinking = false
+	PromotionEndsTurn = false
+	if GameResult != null:
+		GameResult.hide_result()
+
+func RestartPlaySession():
+	if PlayStartState.is_empty():
+		return
+	DeserializeBoard(PlayStartState.duplicate(true))
+	PlayMode = true
+	CheckmateDetected = false
+	DrawDetected = false
+	AIThinking = false
+	PromotionEndsTurn = false
+	if GameResult != null:
+		GameResult.hide_result()
+	UpdateStatusLabel()
+	_schedule_black_turn()
+
+func _show_game_result(title: String, detail: String):
+	if GameResult != null:
+		GameResult.show_result(title, detail)
 
 func _is_king_in_check_raw(color: int) -> bool:
 	# Buscar la ubicación del rey
@@ -759,13 +847,13 @@ func SerializeBoard() -> Dictionary:
 	for tile in Flow.get_children():
 		# Tile activa = no está en DestroyedTiles
 		if not DestroyedTiles.has(tile.name):
-			data.active_tiles.append(tile.name)
+			data.active_tiles.append(str(tile.name))
 		# Pieza en la tile
 		if tile.get_child_count() > 0:
 			var piece = tile.get_child(0)
 			data.pieces.append({
-				"location": tile.name,
-				"type": piece.name,  # "Pawn", "Rook", etc.
+				"location": str(tile.name),
+				"type": str(piece.name),  # "Pawn", "Rook", etc.
 				"color": piece.PieceColor
 			})
 	
@@ -773,6 +861,10 @@ func SerializeBoard() -> Dictionary:
 
 func DeserializeBoard(data: Dictionary):
 	CheckmateDetected = false
+	DrawDetected = false
+	PromotionEndsTurn = false
+	if GameResult != null:
+		GameResult.hide_result()
 	# 1. Limpiar el tablero actual
 	for tile in Flow.get_children():
 		if tile.get_child_count() > 0:
@@ -784,7 +876,8 @@ func DeserializeBoard(data: Dictionary):
 	
 	# 2. Activar las tiles del save
 	for loc in data.active_tiles:
-		var tile = Flow.get_node_or_null(loc)
+		loc = str(loc)
+		var tile = Flow.get_node_or_null(NodePath(loc))
 		if tile != null:
 			DestroyedTiles.erase(loc)
 			UpdateTileVisual(loc)
@@ -796,7 +889,8 @@ func DeserializeBoard(data: Dictionary):
 	
 	# 3. Poner las piezas
 	for piece_data in data.pieces:
-		var tile = Flow.get_node_or_null(piece_data.location)
+		var location = str(piece_data.location)
+		var tile = Flow.get_node_or_null(NodePath(location))
 		if tile == null:
 			continue
 		var scene: PackedScene = _get_piece_scene(piece_data.type)

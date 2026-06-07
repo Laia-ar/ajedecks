@@ -14,6 +14,7 @@ const BUTTON_GAP := 10.0
 @onready var RightPanel: Panel = Board.get_node("RightToolPanel")
 @onready var StatusLabel: Label = Board.get_node("StatusLabel")
 @onready var PuzzleInfo: Panel = Board.get_node("PuzzleInfo")
+@onready var GameResult: Panel = Board.get_node("GameResult")
 
 func _ready():
 	get_viewport().size_changed.connect(_layout)
@@ -62,6 +63,7 @@ func _layout():
 	_center_dialog(Board.get_node("SaveDialog"), Vector2(520.0, 360.0), viewport_size)
 	_center_dialog(Board.get_node("LoadDialog"), Vector2(460.0, 360.0), viewport_size)
 	_center_dialog(Board.get_node("PGNDialog"), Vector2(620.0, 500.0), viewport_size)
+	_center_dialog(GameResult, Vector2(380.0, 210.0), viewport_size)
 
 func _layout_top_buttons():
 	var buttons = [
@@ -105,7 +107,7 @@ func _apply_styles():
 		if node is Button:
 			_style_button(node, normal, hover, pressed, disabled)
 
-	for dialog_name in ["SaveDialog", "LoadDialog", "PGNDialog", "PiecePicker"]:
+	for dialog_name in ["SaveDialog", "LoadDialog", "PGNDialog", "PiecePicker", "GameResult"]:
 		var dialog: Panel = Board.get_node(dialog_name)
 		dialog.add_theme_stylebox_override("panel", _style(Color("#222831"), Color("#596777"), 12, 1))
 		for child in dialog.find_children("*", "Button", true, false):

@@ -50,5 +50,8 @@ func _on_tile_clicked(Location: String):
 	Board.SetHeight(Location, 0)
 	
 	if Board.PlayMode:
+		if Board.RequestPromotionAfterTileRemoved(Location):
+			Deactivate()
+			return
 		Board.EndTurn()
 		Deactivate()

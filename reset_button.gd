@@ -35,3 +35,9 @@ func _on_pressed():
 	Board.Areas.clear()
 	Board.SpecialArea.clear()
 	Board.CheckmateDetected = false
+	Board.DrawDetected = false
+	Board.PromotionEndsTurn = false
+	Board.PlayStartState.clear()
+	Board.get_node("Promotion").visible = false
+	if Board.GameResult != null:
+		Board.GameResult.hide_result()

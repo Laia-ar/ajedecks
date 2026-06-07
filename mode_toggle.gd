@@ -18,12 +18,15 @@ func _on_pressed():
 	if Board.PlayMode:
 		text = "Editar"
 		_set_palette_enabled(false)
+		Board.StartPlaySession()
 		Board.UpdateStatusLabel()
-		Board._schedule_black_king_turn()
+		Board._schedule_black_turn()
 	else:
 		text = "Jugar"
 		_set_palette_enabled(true)
 		Board.AIThinking = false
+		if Board.GameResult != null:
+			Board.GameResult.hide_result()
 		if Board.StatusLabel != null:
 			Board.StatusLabel.visible = false
 

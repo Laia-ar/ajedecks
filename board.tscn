@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=3 uid="uid://c57vujh20ndv0"]
+[gd_scene load_steps=25 format=3 uid="uid://c57vujh20ndv0"]
 
 [ext_resource type="Script" path="res://generator.gd" id="1_ckrtr"]
 [ext_resource type="Script" path="res://game.gd" id="1_f1l42"]
@@ -23,6 +23,7 @@
 [ext_resource type="Script" path="res://ui_layout.gd" id="27_ui"]
 [ext_resource type="Script" path="res://piece_picker.gd" id="28_picker"]
 [ext_resource type="Script" path="res://pgn_import_button.gd" id="29_pgn"]
+[ext_resource type="Script" path="res://game_result.gd" id="30_result"]
 
 [node name="Board" type="Control"]
 layout_mode = 3
@@ -376,6 +377,44 @@ offset_top = 442.0
 offset_right = 596.0
 offset_bottom = 482.0
 text = "Importar posición"
+
+[node name="GameResult" type="Panel" parent="."]
+visible = false
+z_index = 90
+layout_mode = 0
+offset_right = 380.0
+offset_bottom = 210.0
+script = ExtResource("30_result")
+BoardPath = NodePath("..")
+
+[node name="Title" type="Label" parent="GameResult"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 22.0
+offset_right = 356.0
+offset_bottom = 58.0
+theme_override_font_sizes/font_size = 24
+text = "Fin de la partida"
+horizontal_alignment = 1
+
+[node name="Detail" type="Label" parent="GameResult"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 72.0
+offset_right = 356.0
+offset_bottom = 118.0
+text = "Resultado"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="Restart" type="Button" parent="GameResult"]
+layout_mode = 0
+offset_left = 72.0
+offset_top = 142.0
+offset_right = 308.0
+offset_bottom = 190.0
+text = "Reiniciar"
 
 [node name="PuzzleInfo" type="Panel" parent="."]
 visible = false
