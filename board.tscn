@@ -1,4 +1,4 @@
-[gd_scene load_steps=23 format=3 uid="uid://c57vujh20ndv0"]
+[gd_scene load_steps=24 format=3 uid="uid://c57vujh20ndv0"]
 
 [ext_resource type="Script" path="res://generator.gd" id="1_ckrtr"]
 [ext_resource type="Script" path="res://game.gd" id="1_f1l42"]
@@ -22,6 +22,7 @@
 [ext_resource type="Script" path="res://puzzle_info.gd" id="26_pinfo"]
 [ext_resource type="Script" path="res://ui_layout.gd" id="27_ui"]
 [ext_resource type="Script" path="res://piece_picker.gd" id="28_picker"]
+[ext_resource type="Script" path="res://pgn_import_button.gd" id="29_pgn"]
 
 [node name="Board" type="Control"]
 layout_mode = 3
@@ -42,6 +43,7 @@ mouse_filter = 2
 color = Color(0.075, 0.09, 0.11, 1)
 
 [node name="StatusLabel" type="Label" parent="."]
+visible = false
 layout_mode = 0
 offset_left = 900.0
 offset_top = 10.0
@@ -316,6 +318,65 @@ offset_right = 297.0
 offset_bottom = 342.0
 text = "Borrar"
 
+[node name="PGNDialog" type="Panel" parent="."]
+visible = false
+z_index = 101
+layout_mode = 0
+offset_right = 620.0
+offset_bottom = 500.0
+
+[node name="Title" type="Label" parent="PGNDialog"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 18.0
+offset_right = 596.0
+offset_bottom = 44.0
+theme_override_font_sizes/font_size = 19
+text = "Importar partida PGN"
+
+[node name="Description" type="Label" parent="PGNDialog"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 50.0
+offset_right = 596.0
+offset_bottom = 74.0
+text = "Se cargará la posición final de la línea principal."
+
+[node name="PGNInput" type="TextEdit" parent="PGNDialog"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 84.0
+offset_right = 596.0
+offset_bottom = 398.0
+placeholder_text = "[Event \"Ejemplo\"]
+
+1. e4 e5 2. Nf3 Nc6"
+wrap_mode = 1
+
+[node name="ErrorLabel" type="Label" parent="PGNDialog"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 404.0
+offset_right = 596.0
+offset_bottom = 432.0
+theme_override_colors/font_color = Color(0.95, 0.4, 0.4, 1)
+
+[node name="Cancel" type="Button" parent="PGNDialog"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 442.0
+offset_right = 298.0
+offset_bottom = 482.0
+text = "Cancelar"
+
+[node name="Import" type="Button" parent="PGNDialog"]
+layout_mode = 0
+offset_left = 322.0
+offset_top = 442.0
+offset_right = 596.0
+offset_bottom = 482.0
+text = "Importar posición"
+
 [node name="PuzzleInfo" type="Panel" parent="."]
 visible = false
 layout_mode = 0
@@ -389,6 +450,13 @@ script = ExtResource("24_3hkmn")
 BoardPath = NodePath("..")
 OffsetX = 4
 OffsetY = 4
+
+[node name="ImportPGNButton" type="Button" parent="."]
+layout_mode = 0
+script = ExtResource("29_pgn")
+BoardPath = NodePath("..")
+DialogPath = NodePath("../PGNDialog")
+PuzzleInfoPath = NodePath("../PuzzleInfo")
 
 [node name="PiecePicker" type="Panel" parent="."]
 visible = false

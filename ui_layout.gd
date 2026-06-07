@@ -35,7 +35,7 @@ func _layout():
 	var left_x = maxf(16.0, board_rect.position.x - PANEL_WIDTH - 20.0)
 	var right_x = minf(viewport_size.x - PANEL_WIDTH - 16.0, board_rect.end.x + 20.0)
 	LeftPanel.position = Vector2(left_x, board_rect.position.y + 36.0)
-	LeftPanel.size = Vector2(PANEL_WIDTH, 258.0)
+	LeftPanel.size = Vector2(PANEL_WIDTH, 310.0)
 	RightPanel.position = Vector2(right_x, board_rect.position.y + 36.0)
 	RightPanel.size = Vector2(PANEL_WIDTH, 158.0)
 	PuzzleInfo.position = Vector2(right_x, RightPanel.position.y + RightPanel.size.y + 14.0)
@@ -45,7 +45,8 @@ func _layout():
 	_layout_side_panel(LeftPanel, [
 		Board.get_node("StandardButton"),
 		Board.get_node("RandomButton"),
-		Board.get_node("PuzzleGenerator")
+		Board.get_node("PuzzleGenerator"),
+		Board.get_node("ImportPGNButton")
 	])
 	_layout_side_panel(RightPanel, [
 		Board.get_node("ReviveTileCard"),
@@ -60,6 +61,7 @@ func _layout():
 
 	_center_dialog(Board.get_node("SaveDialog"), Vector2(520.0, 360.0), viewport_size)
 	_center_dialog(Board.get_node("LoadDialog"), Vector2(460.0, 360.0), viewport_size)
+	_center_dialog(Board.get_node("PGNDialog"), Vector2(620.0, 500.0), viewport_size)
 
 func _layout_top_buttons():
 	var buttons = [
@@ -103,7 +105,7 @@ func _apply_styles():
 		if node is Button:
 			_style_button(node, normal, hover, pressed, disabled)
 
-	for dialog_name in ["SaveDialog", "LoadDialog", "PiecePicker"]:
+	for dialog_name in ["SaveDialog", "LoadDialog", "PGNDialog", "PiecePicker"]:
 		var dialog: Panel = Board.get_node(dialog_name)
 		dialog.add_theme_stylebox_override("panel", _style(Color("#222831"), Color("#596777"), 12, 1))
 		for child in dialog.find_children("*", "Button", true, false):
@@ -115,7 +117,8 @@ func _apply_styles():
 	for input in [
 		Board.get_node("SaveDialog/NameInput"),
 		Board.get_node("SaveDialog/InformationInput"),
-		Board.get_node("LoadDialog/FileList")
+		Board.get_node("LoadDialog/FileList"),
+		Board.get_node("PGNDialog/PGNInput")
 	]:
 		input.add_theme_font_size_override("font_size", 15)
 

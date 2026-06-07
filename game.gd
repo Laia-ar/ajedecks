@@ -560,6 +560,7 @@ func EndTurn():
 func UpdateStatusLabel():
 	if StatusLabel == null:
 		return
+	StatusLabel.visible = PlayMode
 	var turn_text = "Blanco" if Turn == 0 else "Negro"
 	var status = "Turno: " + turn_text
 	if _is_king_in_check_raw(Turn):

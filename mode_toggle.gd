@@ -18,9 +18,12 @@ func _on_pressed():
 	if Board.PlayMode:
 		text = "Editar"
 		_set_palette_enabled(false)
+		Board.UpdateStatusLabel()
 	else:
 		text = "Jugar"
 		_set_palette_enabled(true)
+		if Board.StatusLabel != null:
+			Board.StatusLabel.visible = false
 
 func _set_palette_enabled(enabled: bool):
 	# Piezas: deshabilitar en Play
