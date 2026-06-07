@@ -83,7 +83,7 @@ func _on_flow_send_location(Location):
 	
 	# Selección inicial
 	if SelectedNode == "" && cell.get_child_count() != 0 && cell.get_child(0).PieceColor == Turn:
-		SelectedNode = Location
+		SetSelectedTile(Location)
 		GetMovableAreas()
 	# Castling
 	elif SelectedNode != "" && cell.get_child_count() != 0 && cell.get_child(0).PieceColor == Turn && cell.get_child(0).name == "Rook":
@@ -115,7 +115,7 @@ func _on_flow_send_location(Location):
 				break  # <-- AGREGADO
 	# Re-select
 	elif SelectedNode != "" && cell.get_child_count() != 0 && cell.get_child(0).PieceColor == Turn:
-		SelectedNode = Location
+		SetSelectedTile(Location)
 		GetMovableAreas()
 	# Capturar pieza enemiga
 	elif SelectedNode != "" && cell.get_child_count() != 0 && cell.get_child(0).PieceColor != Turn:
@@ -148,7 +148,7 @@ func _on_flow_send_location(Location):
 				break  # <-- AGREGADO
 
 func UpdateGame(cell):
-	SelectedNode = ""
+	ClearSelectedTile()
 	var things = Flow.get_children()
 	# get the en-passantable pieces and undo them
 	for i in things:
@@ -171,7 +171,7 @@ func UpdateGame(cell):
 	
 	# King checking.
 	CheckKing(things)
-	SelectedNode = ""
+	ClearSelectedTile()
 	
 	if Turn == 0:
 		Turn = 1
@@ -577,7 +577,7 @@ func DeactivateAllPaletteTools():
 				btn.Deactivate()
 
 func EndTurn():
-	SelectedNode = ""
+	ClearSelectedTile()
 	Areas.clear()
 	SpecialArea.clear()
 	var things = Flow.get_children()
@@ -585,7 +585,7 @@ func EndTurn():
 		if i.get_child_count() != 0:
 			i.get_child(0).modulate = Color(1, 1, 1, 1)
 	CheckKing(things)
-	SelectedNode = ""
+	ClearSelectedTile()
 	if Turn == 0:
 		Turn = 1
 	else:
@@ -624,7 +624,7 @@ func _run_black_turn():
 		_promote_black_ai_pawn_if_needed(target, piece)
 
 	Turn = 0
-	SelectedNode = ""
+	ClearSelectedTile()
 	Areas.clear()
 	SpecialArea.clear()
 	AIThinking = false
@@ -903,9 +903,25 @@ func DeserializeBoard(data: Dictionary):
 	
 	# 4. Restaurar turno
 	Turn = data.get("turn", 0)
-	SelectedNode = ""
+	ClearSelectedTile()
 	Areas.clear()
 	SpecialArea.clear()
+
+func SetSelectedTile(location: String):
+	if SelectedNode == location:
+		return
+	ClearSelectedTile()
+	SelectedNode = location
+	var tile = Flow.get_node_or_null(location)
+	if tile != null and tile.has_method("SetSelected"):
+		tile.SetSelected(true)
+
+func ClearSelectedTile():
+	if SelectedNode != "":
+		var tile = Flow.get_node_or_null(SelectedNode)
+		if tile != null and tile.has_method("SetSelected"):
+			tile.SetSelected(false)
+	SelectedNode = ""
 
 func _on_tile_right_clicked(tile_name: String):
 	if PlayMode or CheckmateDetected:

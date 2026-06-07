@@ -25,6 +25,7 @@ func _on_pressed():
 		text = "Jugar"
 		_set_palette_enabled(true)
 		Board.AIThinking = false
+		Board.ClearSelectedTile()
 		if Board.GameResult != null:
 			Board.GameResult.hide_result()
 		if Board.StatusLabel != null:

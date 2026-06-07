@@ -2,30 +2,63 @@ extends Button
 
 var Board
 var Flow
+var BaseColor := Color.WHITE
+var IsSelected := false
+var IsHovered := false
 
 func _ready():
+	focus_mode = Control.FOCUS_NONE
 	pressed.connect(func(): Flow.SendLocation.emit(str(name)))
 	mouse_entered.connect(_on_mouse_entered)
+	mouse_exited.connect(_on_mouse_exited)
 
 func SetTileColor(color: Color):
-	var normal_style = StyleBoxFlat.new()
-	normal_style.bg_color = color
-	set("theme_override_styles/normal", normal_style)
+	BaseColor = color
+	_update_style()
 
-	var hover_style = normal_style.duplicate()
-	hover_style.bg_color = color.lightened(0.08)
-	set("theme_override_styles/hover", hover_style)
+func SetSelected(selected: bool):
+	IsSelected = selected
+	_update_style()
+	_update_piece_feedback()
 
-	var pressed_style = normal_style.duplicate()
-	pressed_style.bg_color = color.darkened(0.08)
-	set("theme_override_styles/pressed", pressed_style)
+func _update_style():
+	var normal_style = _make_style(BaseColor, Color.TRANSPARENT, 0)
+	var hover_style = _make_style(BaseColor.lightened(0.12), Color("#f4f7fb"), 3)
+	var pressed_style = _make_style(BaseColor.darkened(0.08), Color("#ffffff"), 3)
 
-	var focus_style = StyleBoxEmpty.new()
-	set("theme_override_styles/focus", focus_style)
+	if IsSelected:
+		var selected_style = _make_style(BaseColor.lightened(0.08), Color("#ffd166"), 4)
+		set("theme_override_styles/normal", selected_style)
+		set("theme_override_styles/hover", selected_style)
+		set("theme_override_styles/pressed", selected_style)
+	else:
+		set("theme_override_styles/normal", normal_style)
+		set("theme_override_styles/hover", hover_style)
+		set("theme_override_styles/pressed", pressed_style)
+	set("theme_override_styles/focus", StyleBoxEmpty.new())
 
 func _on_mouse_entered():
+	IsHovered = true
+	_update_style()
 	if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and not Board.PlayMode and not get_viewport().gui_is_dragging():
 		Flow.SendLocation.emit(str(name))
+
+func _on_mouse_exited():
+	IsHovered = false
+	_update_style()
+
+func _update_piece_feedback():
+	if get_child_count() == 0:
+		return
+	var piece = get_child(0)
+	piece.modulate = Color("#ffe29a") if IsSelected else Color.WHITE
+
+func _make_style(background: Color, border: Color, border_width: int) -> StyleBoxFlat:
+	var style = StyleBoxFlat.new()
+	style.bg_color = background
+	style.border_color = border
+	style.set_border_width_all(border_width)
+	return style
 
 func _get_drag_data(at_position):
 	if Board.PlayMode:

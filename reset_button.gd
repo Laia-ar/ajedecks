@@ -31,7 +31,7 @@ func _on_pressed():
 	
 	# Resetear turno
 	Board.Turn = 0
-	Board.SelectedNode = ""
+	Board.ClearSelectedTile()
 	Board.Areas.clear()
 	Board.SpecialArea.clear()
 	Board.CheckmateDetected = false
