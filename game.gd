@@ -49,6 +49,12 @@ var AIThinking: bool = false
 var BlackEngine = preload("res://black_ai.gd").new()
 var PlayStartState: Dictionary = {}
 
+const BLACK_MOVE_THINK_DELAY := 0.45
+const BLACK_MOVE_HIGHLIGHT_DELAY := 0.35
+const BLACK_MOVE_ANIMATION_TIME := 0.55
+const BLACK_MOVE_SOURCE_COLOR := Color("#6c8cff")
+const BLACK_MOVE_TARGET_COLOR := Color("#ffd166")
+
 var RightClickedTile: String = ""
 
 @onready var PiecePicker = get_node_or_null("PiecePicker")
@@ -605,6 +611,12 @@ func _run_black_turn():
 		AIThinking = false
 		return
 
+	UpdateStatusLabel()
+	await get_tree().create_timer(BLACK_MOVE_THINK_DELAY).timeout
+	if not PlayMode or Turn != 1 or CheckmateDetected:
+		AIThinking = false
+		return
+
 	var move: Dictionary = BlackEngine.choose_move(self)
 	if move.is_empty():
 		AIThinking = false
@@ -614,16 +626,27 @@ func _run_black_turn():
 	var source = Flow.get_node(move.from)
 	var target = Flow.get_node(move.to)
 	var piece = source.get_child(0)
+	_highlight_black_ai_move(str(move.from), str(move.to))
+	await get_tree().create_timer(BLACK_MOVE_HIGHLIGHT_DELAY).timeout
+	if not PlayMode or Turn != 1 or CheckmateDetected or not is_instance_valid(piece) or piece.get_parent() != source:
+		_clear_black_ai_move_highlight(str(move.from), str(move.to))
+		AIThinking = false
+		return
+
 	if target.get_child_count() > 0:
 		target.get_child(0).free()
-	piece.reparent(target)
-	piece.position = pos
+	await _animate_black_ai_piece(piece, target)
+	if not is_instance_valid(piece):
+		_clear_black_ai_move_highlight(str(move.from), str(move.to))
+		AIThinking = false
+		return
 	if piece.name == "King" or piece.name == "Rook":
 		piece.Castling = false
 	if piece.name == "Pawn":
 		piece.DoubleStart = false
 		_promote_black_ai_pawn_if_needed(target, piece)
 
+	_clear_black_ai_move_highlight(str(move.from), str(move.to))
 	Turn = 0
 	ClearSelectedTile()
 	Areas.clear()
@@ -631,6 +654,30 @@ func _run_black_turn():
 	AIThinking = false
 	CheckKing(Flow.get_children())
 	UpdateStatusLabel()
+
+func _highlight_black_ai_move(from_location: String, to_location: String):
+	var source = Flow.get_node_or_null(from_location)
+	var target = Flow.get_node_or_null(to_location)
+	if source != null and source.has_method("SetTileColor"):
+		source.SetTileColor(BLACK_MOVE_SOURCE_COLOR)
+	if target != null and target.has_method("SetTileColor"):
+		target.SetTileColor(BLACK_MOVE_TARGET_COLOR)
+
+func _clear_black_ai_move_highlight(from_location: String, to_location: String):
+	UpdateTileVisual(from_location)
+	UpdateTileVisual(to_location)
+
+func _animate_black_ai_piece(piece: Node2D, target: Node):
+	var board_start = piece.global_position
+	piece.reparent(target, true)
+	piece.global_position = board_start
+	var tween = create_tween()
+	tween.set_trans(Tween.TRANS_SINE)
+	tween.set_ease(Tween.EASE_IN_OUT)
+	tween.tween_property(piece, "position", pos, BLACK_MOVE_ANIMATION_TIME)
+	await tween.finished
+	if is_instance_valid(piece):
+		piece.position = pos
 
 func _promote_black_ai_pawn_if_needed(tile, pawn):
 	var parts = str(tile.name).split("-")
