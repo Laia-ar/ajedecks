@@ -2,9 +2,11 @@ extends Button
 
 @export var BoardPath: NodePath
 @export var LoadDialogPath: NodePath  # un Panel con un ItemList y botones
+@export var PuzzleInfoPath: NodePath
 
 @onready var Board = get_node(BoardPath)
 @onready var LoadDialog = get_node(LoadDialogPath)
+@onready var PuzzleInfo = get_node(PuzzleInfoPath)
 
 const SAVE_DIR = "res://saves/"
 
@@ -54,6 +56,7 @@ func _on_confirm():
 		return
 	
 	Board.DeserializeBoard(data)
+	PuzzleInfo.set_information(str(data.get("information", "")))
 	LoadDialog.visible = false
 	print("Cargado: " + path)
 

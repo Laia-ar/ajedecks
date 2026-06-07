@@ -1,4 +1,4 @@
-[gd_scene load_steps=26 format=3 uid="uid://c57vujh20ndv0"]
+[gd_scene load_steps=27 format=3 uid="uid://c57vujh20ndv0"]
 
 [ext_resource type="Script" path="res://generator.gd" id="1_ckrtr"]
 [ext_resource type="Script" path="res://game.gd" id="1_f1l42"]
@@ -25,6 +25,7 @@
 [ext_resource type="Script" path="res://tile_config_toggle.gd" id="23_p1t8u"]
 [ext_resource type="Script" path="res://puzzle_generator.gd" id="24_3hkmn"]
 [ext_resource type="Script" path="res://delete_button.gd" id="25_dbtn"]
+[ext_resource type="Script" path="res://puzzle_info.gd" id="26_pinfo"]
 
 [node name="Board" type="Control"]
 layout_mode = 3
@@ -284,6 +285,7 @@ FlowPath = NodePath("../Flow")
 
 [node name="SaveDialog" type="Panel" parent="."]
 visible = false
+z_index = 10
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 8.825
@@ -317,21 +319,42 @@ offset_top = 0.0649986
 offset_right = -0.0110016
 offset_bottom = 1.5
 
+[node name="InformationLabel" type="Label" parent="SaveDialog"]
+layout_mode = 0
+offset_left = 126.0
+offset_top = 180.0
+offset_right = 500.0
+offset_bottom = 204.0
+text = "Información del puzzle:"
+
+[node name="InformationInput" type="TextEdit" parent="SaveDialog"]
+layout_mode = 0
+offset_left = 126.0
+offset_top = 205.0
+offset_right = 500.0
+offset_bottom = 285.0
+placeholder_text = "Objetivo, reglas especiales, pistas..."
+wrap_mode = 1
+
 [node name="Confirm" type="Button" parent="SaveDialog"]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.586
-anchor_top = 0.696
-anchor_right = 0.891
-anchor_bottom = 0.926
-offset_left = -0.0540009
-offset_top = 0.0399933
-offset_right = 0.0509949
-offset_bottom = -0.0100098
+layout_mode = 0
+offset_left = 368.0
+offset_top = 303.0
+offset_right = 559.0
+offset_bottom = 335.0
 text = "Guardar"
+
+[node name="Cancel" type="Button" parent="SaveDialog"]
+layout_mode = 0
+offset_left = 126.0
+offset_top = 303.0
+offset_right = 317.0
+offset_bottom = 335.0
+text = "Cancelar"
 
 [node name="LoadDialog" type="Panel" parent="."]
 visible = false
+z_index = 10
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 10.65
@@ -402,6 +425,32 @@ offset_right = -0.0730057
 offset_bottom = -0.0120087
 text = "Borrar"
 
+[node name="PuzzleInfo" type="Panel" parent="."]
+visible = false
+custom_minimum_size = Vector2(340, 230)
+layout_mode = 0
+offset_left = 900.0
+offset_top = 160.0
+offset_right = 1240.0
+offset_bottom = 390.0
+script = ExtResource("26_pinfo")
+
+[node name="ToggleButton" type="Button" parent="PuzzleInfo"]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 332.0
+offset_bottom = 42.0
+text = "Información del puzzle ▲"
+
+[node name="InformationText" type="RichTextLabel" parent="PuzzleInfo"]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 50.0
+offset_right = 328.0
+offset_bottom = 218.0
+fit_content = true
+
 [node name="SaveButton" type="Button" parent="."]
 layout_mode = 1
 anchors_preset = -1
@@ -426,6 +475,7 @@ offset_right = -6.10352e-05
 script = ExtResource("17_3qfpr")
 BoardPath = NodePath("..")
 LoadDialogPath = NodePath("../LoadDialog")
+PuzzleInfoPath = NodePath("../PuzzleInfo")
 
 [node name="DeleteButton" type="Button" parent="."]
 layout_mode = 1
