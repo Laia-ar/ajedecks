@@ -36,6 +36,7 @@ func _on_import():
 	if Board.PlayMode:
 		Board.get_node("ModeToggle")._on_pressed()
 	Board.DeserializeBoard(_to_board_data(result))
+	Board.SetLoadedSaveName("")
 	PuzzleInfo.set_information(_build_information(result))
 	Dialog.visible = false
 	DialogBackdrop.visible = false

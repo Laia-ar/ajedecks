@@ -352,4 +352,5 @@ func _load_puzzle(s: Dictionary):
 	}
 	
 	Board.DeserializeBoard(data)
+	Board.SetLoadedSaveName("")
 	print("Puzzle cargado. Tiles activas: ", active_tiles.size(), " | Piezas blancas: ", s.white.size())

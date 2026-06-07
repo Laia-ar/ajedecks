@@ -41,3 +41,4 @@ func _on_pressed():
 			tile.add_child(piece)
 	
 	Board.CheckmateDetected = false
+	Board.SetLoadedSaveName("")

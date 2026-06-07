@@ -1,4 +1,4 @@
-[gd_scene load_steps=25 format=3 uid="uid://c57vujh20ndv0"]
+[gd_scene load_steps=26 format=3 uid="uid://c57vujh20ndv0"]
 
 [ext_resource type="Script" path="res://generator.gd" id="1_ckrtr"]
 [ext_resource type="Script" path="res://game.gd" id="1_f1l42"]
@@ -24,6 +24,7 @@
 [ext_resource type="Script" path="res://piece_picker.gd" id="28_picker"]
 [ext_resource type="Script" path="res://pgn_import_button.gd" id="29_pgn"]
 [ext_resource type="Script" path="res://game_result.gd" id="30_result"]
+[ext_resource type="Script" path="res://save_navigation_button.gd" id="31_save_nav"]
 
 [node name="Board" type="Control"]
 layout_mode = 3
@@ -223,7 +224,7 @@ visible = false
 z_index = 101
 layout_mode = 0
 offset_right = 520.0
-offset_bottom = 360.0
+offset_bottom = 430.0
 
 [node name="Label" type="Label" parent="SaveDialog"]
 layout_mode = 0
@@ -246,31 +247,61 @@ offset_left = 24.0
 offset_top = 106.0
 offset_right = 496.0
 offset_bottom = 130.0
-text = "Información del puzzle:"
+text = "Categorías y notas:"
+
+[node name="DifficultyLabel" type="Label" parent="SaveDialog"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 134.0
+offset_right = 250.0
+offset_bottom = 158.0
+text = "Dificultad:"
+
+[node name="DifficultyInput" type="OptionButton" parent="SaveDialog"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 162.0
+offset_right = 250.0
+offset_bottom = 202.0
+
+[node name="ComplexityLabel" type="Label" parent="SaveDialog"]
+layout_mode = 0
+offset_left = 270.0
+offset_top = 134.0
+offset_right = 496.0
+offset_bottom = 158.0
+text = "Complejidad:"
+
+[node name="ComplexityInput" type="OptionButton" parent="SaveDialog"]
+layout_mode = 0
+offset_left = 270.0
+offset_top = 162.0
+offset_right = 496.0
+offset_bottom = 202.0
 
 [node name="InformationInput" type="TextEdit" parent="SaveDialog"]
 layout_mode = 0
 offset_left = 24.0
-offset_top = 134.0
+offset_top = 218.0
 offset_right = 496.0
-offset_bottom = 282.0
+offset_bottom = 352.0
 placeholder_text = "Objetivo, reglas especiales, pistas..."
 wrap_mode = 1
 
 [node name="Confirm" type="Button" parent="SaveDialog"]
 layout_mode = 0
 offset_left = 270.0
-offset_top = 302.0
+offset_top = 372.0
 offset_right = 496.0
-offset_bottom = 342.0
+offset_bottom = 412.0
 text = "Guardar"
 
 [node name="Cancel" type="Button" parent="SaveDialog"]
 layout_mode = 0
 offset_left = 24.0
-offset_top = 302.0
+offset_top = 372.0
 offset_right = 250.0
-offset_bottom = 342.0
+offset_bottom = 412.0
 text = "Cancelar"
 
 [node name="LoadDialog" type="Panel" parent="."]
@@ -416,6 +447,15 @@ offset_right = 308.0
 offset_bottom = 190.0
 text = "Reiniciar"
 
+[node name="LoadedSaveLabel" type="Label" parent="."]
+layout_mode = 0
+offset_right = 360.0
+offset_bottom = 28.0
+text = "Partida cargada: ninguna"
+horizontal_alignment = 1
+vertical_alignment = 1
+clip_text = true
+
 [node name="PuzzleInfo" type="Panel" parent="."]
 visible = false
 layout_mode = 0
@@ -463,6 +503,31 @@ script = ExtResource("17_3qfpr")
 BoardPath = NodePath("..")
 LoadDialogPath = NodePath("../LoadDialog")
 PuzzleInfoPath = NodePath("../PuzzleInfo")
+
+[node name="PreviousSaveButton" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 15.25
+anchor_top = 0.275
+anchor_right = 17.9
+anchor_bottom = 1.2
+offset_left = -6.10352e-05
+offset_right = -6.10352e-05
+script = ExtResource("31_save_nav")
+LoadButtonPath = NodePath("../LoadButton")
+Direction = -1
+
+[node name="NextSaveButton" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 15.25
+anchor_top = 0.275
+anchor_right = 17.9
+anchor_bottom = 1.2
+offset_left = -6.10352e-05
+offset_right = -6.10352e-05
+script = ExtResource("31_save_nav")
+LoadButtonPath = NodePath("../LoadButton")
 
 [node name="DeleteButton" type="Button" parent="."]
 layout_mode = 1

@@ -13,6 +13,7 @@ const BUTTON_GAP := 10.0
 @onready var LeftPanel: Panel = Board.get_node("LeftToolPanel")
 @onready var RightPanel: Panel = Board.get_node("RightToolPanel")
 @onready var StatusLabel: Label = Board.get_node("StatusLabel")
+@onready var LoadedSaveLabel: Label = Board.get_node("LoadedSaveLabel")
 @onready var PuzzleInfo: Panel = Board.get_node("PuzzleInfo")
 @onready var GameResult: Panel = Board.get_node("GameResult")
 
@@ -43,6 +44,8 @@ func _layout():
 	PuzzleInfo.size.x = PANEL_WIDTH
 
 	_layout_top_buttons()
+	LoadedSaveLabel.position = Vector2(board_rect.position.x, TopToolbar.position.y + TopToolbar.size.y + 8.0)
+	LoadedSaveLabel.size = Vector2(board_rect.size.x, 30.0)
 	_layout_side_panel(LeftPanel, [
 		Board.get_node("StandardButton"),
 		Board.get_node("RandomButton"),
@@ -60,29 +63,35 @@ func _layout():
 	)
 	StatusLabel.size = Vector2(300.0, 32.0)
 
-	_center_dialog(Board.get_node("SaveDialog"), Vector2(520.0, 360.0), viewport_size)
+	_center_dialog(Board.get_node("SaveDialog"), Vector2(520.0, 430.0), viewport_size)
 	_center_dialog(Board.get_node("LoadDialog"), Vector2(460.0, 360.0), viewport_size)
 	_center_dialog(Board.get_node("PGNDialog"), Vector2(620.0, 500.0), viewport_size)
 	_center_dialog(GameResult, Vector2(380.0, 210.0), viewport_size)
 
 func _layout_top_buttons():
 	var buttons = [
-		Board.get_node("ModeToggle"),
-		Board.get_node("ResetButton"),
-		Board.get_node("SaveButton"),
-		Board.get_node("LoadButton"),
-		Board.get_node("DeleteButton")
+		{"node": Board.get_node("ModeToggle"), "weight": 1.25},
+		{"node": Board.get_node("ResetButton"), "weight": 1.0},
+		{"node": Board.get_node("SaveButton"), "weight": 1.0},
+		{"node": Board.get_node("PreviousSaveButton"), "weight": 0.45},
+		{"node": Board.get_node("LoadButton"), "weight": 1.0},
+		{"node": Board.get_node("NextSaveButton"), "weight": 0.45},
+		{"node": Board.get_node("DeleteButton"), "weight": 1.0}
 	]
 	var available_width = TopToolbar.size.x - PANEL_PADDING * 2.0
-	var width = (available_width - BUTTON_GAP * (buttons.size() - 1)) / buttons.size()
+	var total_weight := 0.0
+	for item in buttons:
+		total_weight += float(item["weight"])
+	var unit_width = (available_width - BUTTON_GAP * (buttons.size() - 1)) / total_weight
+	var x := PANEL_PADDING
 	for index in buttons.size():
-		var button: Button = buttons[index]
+		var item = buttons[index]
+		var button: Button = item["node"]
+		var width = unit_width * float(item["weight"])
 		_prepare_control(button)
-		button.position = TopToolbar.position + Vector2(
-			PANEL_PADDING + index * (width + BUTTON_GAP),
-			6.0
-		)
+		button.position = TopToolbar.position + Vector2(x, 6.0)
 		button.size = Vector2(width, BUTTON_HEIGHT)
+		x += width + BUTTON_GAP
 
 func _layout_side_panel(panel: Panel, buttons: Array):
 	var y = 50.0
@@ -119,6 +128,8 @@ func _apply_styles():
 	for input in [
 		Board.get_node("SaveDialog/NameInput"),
 		Board.get_node("SaveDialog/InformationInput"),
+		Board.get_node("SaveDialog/DifficultyInput"),
+		Board.get_node("SaveDialog/ComplexityInput"),
 		Board.get_node("LoadDialog/FileList"),
 		Board.get_node("PGNDialog/PGNInput")
 	]:
@@ -141,6 +152,13 @@ func _apply_styles():
 	_prepare_control(StatusLabel)
 	StatusLabel.add_theme_color_override("font_color", Color("#dce4ec"))
 	StatusLabel.add_theme_stylebox_override("normal", _style(Color("#222831"), Color("#39424e"), 8, 1))
+
+	LoadedSaveLabel.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	LoadedSaveLabel.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	_prepare_control(LoadedSaveLabel)
+	LoadedSaveLabel.add_theme_font_size_override("font_size", 15)
+	LoadedSaveLabel.add_theme_color_override("font_color", Color("#f0d58a"))
+	LoadedSaveLabel.add_theme_stylebox_override("normal", _style(Color("#1f252d"), Color("#4b5563"), 8, 1))
 
 func _style_button(button: Button, normal: StyleBox, hover: StyleBox, pressed: StyleBox, disabled: StyleBox):
 	button.custom_minimum_size = Vector2(

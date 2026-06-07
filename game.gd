@@ -27,6 +27,7 @@ var TileHeights: Dictionary = {}
 
 @onready var pos: Vector2 = Vector2(Flow.TileXSize / 2, Flow.TileYSize / 2)
 @onready var StatusLabel = get_node_or_null("StatusLabel")
+@onready var LoadedSaveLabel = get_node_or_null("LoadedSaveLabel")
 # Areas where the player can move
 var Areas: PackedStringArray
 # this is seperate the Areas for special circumstances, like castling.
@@ -922,6 +923,17 @@ func ClearSelectedTile():
 		if tile != null and tile.has_method("SetSelected"):
 			tile.SetSelected(false)
 	SelectedNode = ""
+
+func SetLoadedSaveName(save_name: String):
+	if LoadedSaveLabel == null:
+		return
+	var clean_name = save_name.strip_edges()
+	if clean_name.is_empty():
+		LoadedSaveLabel.text = "Partida cargada: ninguna"
+		LoadedSaveLabel.tooltip_text = ""
+	else:
+		LoadedSaveLabel.text = "Partida cargada: " + clean_name
+		LoadedSaveLabel.tooltip_text = clean_name
 
 func _on_tile_right_clicked(tile_name: String):
 	if PlayMode or CheckmateDetected:
