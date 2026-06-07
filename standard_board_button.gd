@@ -7,7 +7,8 @@ extends Button
 @onready var Flow = get_node(FlowPath)
 
 func _ready():
-	text = "♜ Standard"
+	text = "Tablero clásico"
+	tooltip_text = "Crear una partida de ajedrez estándar"
 	pressed.connect(_on_pressed)
 
 func _on_pressed():

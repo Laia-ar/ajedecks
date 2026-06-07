@@ -7,17 +7,23 @@ extends Button
 @onready var Board = get_node(BoardPath)
 @onready var LoadDialog = get_node(LoadDialogPath)
 @onready var PuzzleInfo = get_node(PuzzleInfoPath)
+@onready var DialogBackdrop = LoadDialog.get_parent().get_node("DialogBackdrop")
 
 const SAVE_DIR = "res://saves/"
 
 func _ready():
-	text = "📂 Load"
+	text = "Cargar"
+	tooltip_text = "Cargar un puzzle guardado"
 	pressed.connect(_on_pressed)
 	LoadDialog.get_node("Confirm").pressed.connect(_on_confirm)
 	LoadDialog.get_node("Cancel").pressed.connect(_on_cancel)
 
 func _on_pressed():
 	_refresh_save_list()
+	LoadDialog.get_node("Label").text = "Cargar puzzle"
+	LoadDialog.get_node("Confirm").visible = true
+	LoadDialog.get_node("Delete").visible = false
+	DialogBackdrop.visible = true
 	LoadDialog.visible = true
 
 func _refresh_save_list():
@@ -58,7 +64,9 @@ func _on_confirm():
 	Board.DeserializeBoard(data)
 	PuzzleInfo.set_information(str(data.get("information", "")))
 	LoadDialog.visible = false
+	DialogBackdrop.visible = false
 	print("Cargado: " + path)
 
 func _on_cancel():
 	LoadDialog.visible = false
+	DialogBackdrop.visible = false

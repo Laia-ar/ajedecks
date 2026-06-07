@@ -1,4 +1,4 @@
-[gd_scene load_steps=23 format=3 uid="uid://c57vujh20ndv0"]
+[gd_scene load_steps=22 format=3 uid="uid://c57vujh20ndv0"]
 
 [ext_resource type="Script" path="res://generator.gd" id="1_ckrtr"]
 [ext_resource type="Script" path="res://game.gd" id="1_f1l42"]
@@ -15,13 +15,12 @@
 [ext_resource type="Script" path="res://reset_button.gd" id="15_mmcrq"]
 [ext_resource type="Script" path="res://save_button.gd" id="16_ccxe3"]
 [ext_resource type="Script" path="res://load_button.gd" id="17_3qfpr"]
-[ext_resource type="Script" path="res://card_raise_tile.gd" id="18_o2vdi"]
 [ext_resource type="Script" path="res://standard_board_button.gd" id="20_stnd"]
 [ext_resource type="Script" path="res://random_board_button.gd" id="21_rand"]
-[ext_resource type="Script" path="res://tile_config_toggle.gd" id="23_p1t8u"]
 [ext_resource type="Script" path="res://puzzle_generator.gd" id="24_3hkmn"]
 [ext_resource type="Script" path="res://delete_button.gd" id="25_dbtn"]
 [ext_resource type="Script" path="res://puzzle_info.gd" id="26_pinfo"]
+[ext_resource type="Script" path="res://ui_layout.gd" id="27_ui"]
 
 [node name="Board" type="Control"]
 layout_mode = 3
@@ -30,6 +29,16 @@ offset_right = 40.0
 offset_bottom = 40.0
 script = ExtResource("1_f1l42")
 BoardPath = NodePath("Flow")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.075, 0.09, 0.11, 1)
 
 [node name="StatusLabel" type="Label" parent="."]
 layout_mode = 0
@@ -97,6 +106,34 @@ offset_right = 140.0
 offset_bottom = 83.0
 text = "Queen"
 
+[node name="TopToolbar" type="Panel" parent="."]
+layout_mode = 0
+mouse_filter = 2
+
+[node name="LeftToolPanel" type="Panel" parent="."]
+layout_mode = 0
+mouse_filter = 2
+
+[node name="Title" type="Label" parent="LeftToolPanel"]
+layout_mode = 0
+offset_left = 14.0
+offset_top = 14.0
+offset_right = 206.0
+offset_bottom = 40.0
+text = "Configuración"
+
+[node name="RightToolPanel" type="Panel" parent="."]
+layout_mode = 0
+mouse_filter = 2
+
+[node name="Title" type="Label" parent="RightToolPanel"]
+layout_mode = 0
+offset_left = 14.0
+offset_top = 14.0
+offset_right = 206.0
+offset_bottom = 40.0
+text = "Herramientas de tiles"
+
 [node name="DestroyTileCard" type="Button" parent="."]
 layout_mode = 1
 anchors_preset = -1
@@ -131,7 +168,7 @@ anchor_bottom = 1.3
 script = ExtResource("14_1lhue")
 BoardPath = NodePath("..")
 PaletteButtons = Array[NodePath]([NodePath("../StandardButton"), NodePath("../RandomButton")])
-TilePaletteButtons = Array[NodePath]([NodePath("../DestroyTileCard"), NodePath("../ReviveTileCard"), NodePath("../RaiseTile"), NodePath("../LowerTile")])
+TilePaletteButtons = Array[NodePath]([NodePath("../DestroyTileCard"), NodePath("../ReviveTileCard")])
 
 [node name="ResetButton" type="Button" parent="."]
 layout_mode = 1
@@ -166,146 +203,116 @@ script = ExtResource("21_rand")
 BoardPath = NodePath("..")
 FlowPath = NodePath("../Flow")
 
+[node name="DialogBackdrop" type="ColorRect" parent="."]
+visible = false
+z_index = 100
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.62)
+
 [node name="SaveDialog" type="Panel" parent="."]
 visible = false
-z_index = 10
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 8.825
-anchor_top = 4.675
-anchor_right = 24.5
-anchor_bottom = 13.525
-offset_left = -3.05176e-05
-offset_right = -6.10352e-05
+z_index = 101
+layout_mode = 0
+offset_right = 520.0
+offset_bottom = 360.0
 
 [node name="Label" type="Label" parent="SaveDialog"]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.205
-anchor_top = 0.115
-anchor_right = 0.77
-anchor_bottom = 0.2
-offset_left = 0.00499725
-offset_top = -11.525
-offset_right = -0.030014
+layout_mode = 0
+offset_left = 24.0
+offset_top = 20.0
+offset_right = 496.0
+offset_bottom = 44.0
 text = "Nombre del save:"
 
 [node name="NameInput" type="LineEdit" parent="SaveDialog"]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.201
-anchor_top = 0.281
-anchor_right = 0.749
-anchor_bottom = 0.5
-offset_left = -0.0390015
-offset_top = 0.0649986
-offset_right = -0.0110016
-offset_bottom = 1.5
+layout_mode = 0
+offset_left = 24.0
+offset_top = 48.0
+offset_right = 496.0
+offset_bottom = 88.0
 
 [node name="InformationLabel" type="Label" parent="SaveDialog"]
 layout_mode = 0
-offset_left = 126.0
-offset_top = 180.0
-offset_right = 500.0
-offset_bottom = 204.0
+offset_left = 24.0
+offset_top = 106.0
+offset_right = 496.0
+offset_bottom = 130.0
 text = "Información del puzzle:"
 
 [node name="InformationInput" type="TextEdit" parent="SaveDialog"]
 layout_mode = 0
-offset_left = 126.0
-offset_top = 205.0
-offset_right = 500.0
-offset_bottom = 285.0
+offset_left = 24.0
+offset_top = 134.0
+offset_right = 496.0
+offset_bottom = 282.0
 placeholder_text = "Objetivo, reglas especiales, pistas..."
 wrap_mode = 1
 
 [node name="Confirm" type="Button" parent="SaveDialog"]
 layout_mode = 0
-offset_left = 368.0
-offset_top = 303.0
-offset_right = 559.0
-offset_bottom = 335.0
+offset_left = 270.0
+offset_top = 302.0
+offset_right = 496.0
+offset_bottom = 342.0
 text = "Guardar"
 
 [node name="Cancel" type="Button" parent="SaveDialog"]
 layout_mode = 0
-offset_left = 126.0
-offset_top = 303.0
-offset_right = 317.0
-offset_bottom = 335.0
+offset_left = 24.0
+offset_top = 302.0
+offset_right = 250.0
+offset_bottom = 342.0
 text = "Cancelar"
 
 [node name="LoadDialog" type="Panel" parent="."]
 visible = false
-z_index = 10
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 10.65
-anchor_top = 4.5
-anchor_right = 23.825
-anchor_bottom = 11.825
-offset_left = -3.05176e-05
-offset_bottom = -3.05176e-05
+z_index = 101
+layout_mode = 0
+offset_right = 460.0
+offset_bottom = 360.0
 
 [node name="Label" type="Label" parent="LoadDialog"]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.522
-anchor_top = 0.038
-anchor_right = 0.954
-anchor_bottom = 0.224
-offset_left = -0.0939941
-offset_top = -0.134006
-offset_right = -0.206024
-offset_bottom = -4.284
+layout_mode = 0
+offset_left = 24.0
+offset_top = 20.0
+offset_right = 436.0
+offset_bottom = 44.0
 text = "Elegí un save:"
 
 [node name="FileList" type="ItemList" parent="LoadDialog"]
-layout_mode = 1
-anchors_preset = -1
-anchor_right = 0.465
-anchor_bottom = 0.631
-offset_right = -0.0550232
-offset_bottom = 0.116989
+layout_mode = 0
+offset_left = 24.0
+offset_top = 50.0
+offset_right = 436.0
+offset_bottom = 282.0
 
 [node name="Confirm" type="Button" parent="LoadDialog"]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.631
-anchor_top = 0.672
-anchor_right = 0.88
-anchor_bottom = 0.903
-offset_left = -0.0710144
-offset_top = -0.0480042
-offset_right = -0.0800171
-offset_bottom = -0.00200653
+layout_mode = 0
+offset_left = 302.0
+offset_top = 302.0
+offset_right = 436.0
+offset_bottom = 342.0
 text = "Cargar"
 
 [node name="Cancel" type="Button" parent="LoadDialog"]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.037
-anchor_top = 0.687
-anchor_right = 0.353
-anchor_bottom = 0.918
-offset_left = 0.0830002
-offset_top = -0.0580063
-offset_right = -0.0730057
-offset_bottom = -0.0120087
-text = "Cancelar
-"
+layout_mode = 0
+offset_left = 24.0
+offset_top = 302.0
+offset_right = 158.0
+offset_bottom = 342.0
+text = "Cancelar"
 
 [node name="Delete" type="Button" parent="LoadDialog"]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.37
-anchor_top = 0.687
-anchor_right = 0.6
-anchor_bottom = 0.918
-offset_left = 0.0830002
-offset_top = -0.0580063
-offset_right = -0.0730057
-offset_bottom = -0.0120087
+layout_mode = 0
+offset_left = 163.0
+offset_top = 302.0
+offset_right = 297.0
+offset_bottom = 342.0
 text = "Borrar"
 
 [node name="PuzzleInfo" type="Panel" parent="."]
@@ -372,44 +379,6 @@ offset_right = -6.10352e-05
 script = ExtResource("25_dbtn")
 BoardPath = NodePath("..")
 LoadDialogPath = NodePath("../LoadDialog")
-
-[node name="RaiseTile" type="Button" parent="."]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 11.175
-anchor_top = 15.475
-anchor_right = 13.575
-anchor_bottom = 17.1
-script = ExtResource("18_o2vdi")
-BoardPath = NodePath("..")
-FlowPath = NodePath("../Flow")
-
-[node name="LowerTile" type="Button" parent="."]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 7.625
-anchor_top = 15.3
-anchor_right = 10.325
-anchor_bottom = 17.0
-offset_left = -3.05176e-05
-offset_top = -6.10352e-05
-offset_right = -3.05176e-05
-script = ExtResource("18_o2vdi")
-BoardPath = NodePath("..")
-FlowPath = NodePath("../Flow")
-Delta = -1
-
-[node name="TileConfigToggle" type="Button" parent="." node_paths=PackedStringArray("raise_tile_button", "lower_tile_button")]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 24.525
-anchor_top = 3.425
-anchor_right = 27.725
-anchor_bottom = 4.025
-offset_left = -6.10352e-05
-script = ExtResource("23_p1t8u")
-raise_tile_button = NodePath("../RaiseTile")
-lower_tile_button = NodePath("../LowerTile")
 
 [node name="PuzzleGenerator" type="Button" parent="."]
 layout_mode = 1
@@ -495,6 +464,9 @@ text = "Borrar pieza"
 [node name="Cancel" type="Button" parent="PiecePicker/GridContainer"]
 layout_mode = 2
 text = "Cancelar"
+
+[node name="UILayout" type="Node" parent="."]
+script = ExtResource("27_ui")
 
 [connection signal="GameWin" from="." to="GameWin" method="_on_board_game_win"]
 [connection signal="SendLocation" from="Flow" to="." method="_on_flow_send_location"]

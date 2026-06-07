@@ -10,7 +10,8 @@ var piece_types = ["Pawn", "Rook", "Knight", "Bishop", "Queen", "King"]
 var piece_scenes: Dictionary
 
 func _ready():
-	text = "🎲 Random"
+	text = "Piezas aleatorias"
+	tooltip_text = "Distribuir piezas al azar sobre las tiles activas"
 	pressed.connect(_on_pressed)
 	piece_scenes = {
 		"Pawn": Flow.Pawn,

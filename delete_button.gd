@@ -5,11 +5,13 @@ extends Button
 
 @onready var Board = get_node(BoardPath)
 @onready var LoadDialog = get_node(LoadDialogPath)
+@onready var DialogBackdrop = LoadDialog.get_parent().get_node("DialogBackdrop")
 
 const SAVE_DIR = "res://saves/"
 
 func _ready():
-	text = "🗑 Delete"
+	text = "Eliminar"
+	tooltip_text = "Eliminar un puzzle guardado"
 	pressed.connect(_on_pressed)
 	LoadDialog.get_node("Delete").pressed.connect(_on_delete_confirm)
 	LoadDialog.get_node("Cancel").pressed.connect(_on_cancel)
@@ -28,6 +30,10 @@ func _on_pressed():
 			list.add_item(filename.trim_suffix(".json"))
 		filename = dir.get_next()
 	
+	LoadDialog.get_node("Label").text = "Eliminar puzzle"
+	LoadDialog.get_node("Confirm").visible = false
+	LoadDialog.get_node("Delete").visible = true
+	DialogBackdrop.visible = true
 	LoadDialog.visible = true
 
 func _on_delete_confirm():
@@ -45,3 +51,4 @@ func _on_delete_confirm():
 
 func _on_cancel():
 	LoadDialog.visible = false
+	DialogBackdrop.visible = false

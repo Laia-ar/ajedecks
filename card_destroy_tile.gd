@@ -13,6 +13,7 @@ var SelectingTile: bool = false
 
 func _ready():
 	text = "Sacar tile"
+	tooltip_text = "Seleccionar una tile vacía para eliminarla"
 	pressed.connect(_on_pressed)
 	# Conectarse a la señal del Flow para enterarse cuando se clickea una tile
 	Flow.SendLocation.connect(_on_tile_clicked)
@@ -26,7 +27,7 @@ func _on_pressed():
 		Board.DeactivateAllPaletteTools()
 	SelectingTile = !SelectingTile  # Toggle: si la apretás de nuevo, cancelás
 	if SelectingTile:
-		text = "Elegí una tile para sacar..."
+		text = "Cancelar selección"
 	else:
 		text = "Sacar tile"
 

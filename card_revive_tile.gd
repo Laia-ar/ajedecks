@@ -10,6 +10,7 @@ var SelectingTile: bool = false
 
 func _ready():
 	text = "Agregar tile"
+	tooltip_text = "Seleccionar un espacio gris para recuperar la tile"
 	pressed.connect(_on_pressed)
 	Flow.SendLocation.connect(_on_tile_clicked)
 
@@ -22,7 +23,7 @@ func _on_pressed():
 		Board.DeactivateAllPaletteTools()
 	SelectingTile = !SelectingTile
 	if SelectingTile:
-		text = "Elegí dónde agregar una tile..."
+		text = "Cancelar selección"
 	else:
 		text = "Agregar tile"
 

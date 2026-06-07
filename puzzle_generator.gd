@@ -23,7 +23,8 @@ const MAX_TURNS: int = 3
 const PIECE_TYPES = ["Rook", "Bishop", "Knight"]
 
 func _ready():
-	text = "🎲 Generar puzzle 3x3"
+	text = "Generar puzzle 3x3"
+	tooltip_text = "Generar un puzzle experimental de tiles"
 	pressed.connect(_on_pressed)
 
 func _on_pressed():

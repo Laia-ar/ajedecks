@@ -14,6 +14,7 @@ var BaseText: String = ""
 func _ready():
 	BaseText = "Elevar tile" if Delta > 0 else "Bajar tile"
 	text = BaseText
+	tooltip_text = "Cambiar la altura de una tile activa"
 	pressed.connect(_on_pressed)
 	Flow.SendLocation.connect(_on_tile_clicked)
 
@@ -26,7 +27,7 @@ func _on_pressed():
 		Board.DeactivateAllPaletteTools()
 	Selecting = !Selecting
 	if Selecting:
-		text = "Elegí una tile..."
+		text = "Cancelar selección"
 	else:
 		text = BaseText
 

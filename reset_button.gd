@@ -9,7 +9,8 @@ extends Button
 @onready var ModeToggle = get_node(ModeTogglePath)
 
 func _ready():
-	text = "↻ Reset"
+	text = "Reiniciar"
+	tooltip_text = "Vaciar el tablero y volver al modo edición"
 	pressed.connect(_on_pressed)
 
 func _on_pressed():

@@ -9,16 +9,17 @@ extends Button
 @onready var Board = get_node(BoardPath)
 
 func _ready():
-	text = "▶ Play"
+	text = "Jugar"
+	tooltip_text = "Probar el puzzle con las reglas de juego"
 	pressed.connect(_on_pressed)
 
 func _on_pressed():
 	Board.PlayMode = not Board.PlayMode
 	if Board.PlayMode:
-		text = "✎ Edit"
+		text = "Editar"
 		_set_palette_enabled(false)
 	else:
-		text = "▶ Play"
+		text = "Jugar"
 		_set_palette_enabled(true)
 
 func _set_palette_enabled(enabled: bool):

@@ -5,11 +5,13 @@ extends Button
 
 @onready var Board = get_node(BoardPath)
 @onready var SaveDialog = get_node(SaveDialogPath)
+@onready var DialogBackdrop = SaveDialog.get_parent().get_node("DialogBackdrop")
 
 const SAVE_DIR = "res://saves/"
 
 func _ready():
-	text = "💾 Save"
+	text = "Guardar"
+	tooltip_text = "Guardar el puzzle actual"
 	pressed.connect(_on_pressed)
 	# Los puzzles se guardan dentro del proyecto para poder versionarlos.
 	var error = DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(SAVE_DIR))
@@ -20,6 +22,7 @@ func _ready():
 	SaveDialog.get_node("Cancel").pressed.connect(_on_cancel)
 
 func _on_pressed():
+	DialogBackdrop.visible = true
 	SaveDialog.visible = true
 	SaveDialog.get_node("NameInput").text = ""
 	SaveDialog.get_node("InformationInput").text = ""
@@ -44,7 +47,9 @@ func _on_confirm():
 	file.close()
 	
 	SaveDialog.visible = false
+	DialogBackdrop.visible = false
 	print("Guardado: " + path)
 
 func _on_cancel():
 	SaveDialog.visible = false
+	DialogBackdrop.visible = false
